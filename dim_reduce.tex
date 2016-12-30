@@ -356,13 +356,19 @@ To see this, consider an orthogonal \emph{rotation} matrix $\rotation$ ($\rotati
 While mathematically equivalent, $\loadings$ and $\loadings^*$ may have very different interpretations. 
 This is why many researchers find FA an unsatisfactory inference tool.
 
+
 \begin{remark}[Identifiability in PCA]
 	The non-uniqueness (non-identifiability) of the FA solution under variable rotation is never mentioned in the PCA context. Why is this?
 	This is because the methods solve different problems. 
 	The reason the solution to PCA is well defined is that PCA does not seek a single $\latent$ but rather a \emph{sequence} of $\latent$ with dimensions growing from $1$ to $n$. 
 \end{remark}
 
-
+\begin{remark}[Linear and non-linear embeddings]
+	In classical FA in Eq.(\ref{eq:factor}) is clearly an embedding to a linear space. 
+	The one spanned by $\latent$. 
+	Under the classical probabilistic assumptions on $\latent$ and $\varepsilon$ the embedding itself is also linear, and is sometimes solved with PCA. 
+	Being a generative model, there is no restriction for the embedding to be linear, and there certainly exists sets of assumptions for which the FA embedding is non linear. 
+\end{remark}
 
 \paragraph{FA Terminology}
 The FA terminology is slightly different than PCA:
@@ -404,7 +410,7 @@ For an full exposition, and a discussion of the differences with PCA, see \cite{
 \subsection{Non Linear Factor Analysis}
 Classical FA deals with features, $X$, that are linear in the latent factors, $\latent$. 
 Like any other generative model approach, it can be easily extended to deal with non-linear functions of the latent factors: $X=g(S)$, provided that $g(.)$ is one-to-one. 
-
+This problem is a non-linear embedding into a linear space (the one spanned by $\latent$).
 
 
 
@@ -436,7 +442,24 @@ Recovering $\latent$ is thus recovering the original signals mixing in the recor
 \end{remark}
 
 
-\paragraph{Mathematics of ICA}
+\begin{remark}[Linear and non-linear embeddings]
+	In classical FA in Eq.(\ref{eq:factor}) is clearly an embedding to a linear space. 
+	The one spanned by $\latent$. 
+	Under the classical probabilistic assumptions on $\latent$ and $\varepsilon$ the embedding itself is also linear, and is sometimes solved with PCA. 
+	Being a generative model, there is no restriction for the embedding to be linear, and there certainly exists sets of assumptions for which the FA embedding is non linear. 
+\end{remark}
+
+
+\begin{remark}[Linear and non-linear embeddings]
+	In classical ICA in Eq.(\ref{eq:factor}) is clearly an embedding to a linear space. 
+	The one spanned by $\latent$. 
+	The probabilistic assumptions on $\latent$ and $\varepsilon$ the embedding itself being non linear, thus solved as an optimization problem, and not via PCA. 
+\end{remark}
+
+
+
+
+\subsubsection{Mathematics of ICA}
 For ease of presentation we present a simple setup, which can be considerably generalized. 
 In this setup, we will first analyze the population problem, i.e., in terms of random variables. 
 We thus replace the data $X$, with the random vector $\x$, and afterwards consider implementation for finite samples. 
@@ -473,6 +496,10 @@ The different implementations of ICA, indeed look for a matrix $\loadings$ which
 
 
 
+
+
+
+
 \subsubsection{Bibliographic notes}
 For a general discussion of ICA see \cite{jolliffe2002principal}.
 For a brief exposition of the linear ICA see \cite{friedman2001elements}. 
@@ -486,6 +513,242 @@ For a detailed review of ICA see \cite{hyvarinen2000independent}.
 
 
 \section{Purely Algorithmic Approaches}
+
+
+
+
+\subsection{Multidimensional Scaling (MDS)}
+\label{sec:mds}
+
+MDS aims at representing a network\footnote{The term Graph is typically used in this context instead of Network. But a graph allows only yes/no relations, while a network, which is a weighted graph, allows a continous measure of similarity (or dissimilarity). It is thus more appropriate.} of distances (or similarities) between observations, by embedding the observations in a $\rank$ dimensional \emph{linear} subspace, while preserving the original distances.
+The network may be obtained by computing some similarity (or dissimilarity) measure with the raw features $X$, or simply because the data itself is a network (social, communication, etc.).
+
+Since MDS mainly serves for visualizing data, it is most natural to use $\rank=2$. 
+The embedding will distort the original distances (or\dots), and may even change the ordering of the observations. The good news is that it is easier to visualize \andor cluster them in their new simplified representation. 
+
+If the input of MDS is the empirical covariance similarity network, then MDS with ``classical scaling'' (see below) returns the exact same solution as PCA.
+
+The embedding is merely the assigning of each point to a location in some lower dimensional linear space $\manifold$. 
+The assignment is driven by a \emph{stress function} which penalizes for the average distortion created by the embedding.
+The different types of MDSs, such as \emph{Classical MDS}, and \emph{Sammon Mappings}, differ in the stress function driving the embedding.
+
+Sadly, MDS may scale poorly to large dissimilarity matrices, and the optimization may converge to a local minimum.
+Being a data embedding, and not an embedding function, when new data points are made available, the embedding will have to be re-learned.
+
+For more on MDS see Section 14.8 in \cite{hastie_elements_2003} or \cite{borg_modern_2005}.
+
+
+
+\subsubsection{Non-Metric MDS}
+[TODO]
+
+
+\paragraph{Mathematics of MDS}
+We start with either a dissimilarity network $\dissimilaritys=(\dissimilarity_{i,j})$, or a similarity network $\similaritys=(\similarity_{i,j})$.
+Similarities can be thought of as correlations, and dissimilarities as distances (which are indeed the typical measures in use).
+Define $z_i \in \reals^\rank$ the location of point $i$ in the target linear space of rank $\rank$. 
+The $z_i$'s are set to minimize some penalty for geometric deformation called the \emph{stress function}.
+Typical stress functions include:
+\begin{description}
+	
+	\item[Classical MDS] Using the centred inner product (i.e. empirical covariance) as the similarity measure and minimizes the squared distortion:
+	$\similarity_{i,j}:= \scalar{x_i-\bar x}{x_j-\bar{x}}$ and the new location are given by
+	\begin{align}
+	\label{eq:mds_classical}
+	\argmin{z_1,\dots,z_n}{\sum_{i,j=1}^{n} (\similarity_{i,j}-\scalar{z_i-\bar z}{z_j-\bar{z}} )^2}.
+	\end{align}
+	
+	\item[Least Squares] Also known as \emph{Kruskal-Shepard}. Also minimizes the squared distortion. 
+	\begin{align}
+	\label{eq:mds_stress}
+	\argmin{z_1,\dots,z_n}{\sum_{i \neq j} (\dissimilarity_{i,j}-\norm{z_i-z_j} )^2}.
+	\end{align}
+	
+	\item[Sammon Mapping] Also known as \emph{Sammon's stress}, aims at minimizing the \emph{proportion} of distortion:
+	\begin{align}
+	\label{eq:mds_sammon}
+	\argmin{z_1,\dots,z_n}{\sum_{i \neq j} \frac{(\dissimilarity_{i,j}-\norm{z_i-z_j} )^2}{\dissimilarity_{i,j}}}.
+	\end{align}
+	
+\end{description}
+
+
+\begin{remark}[Classical and Least Squares MDS]
+	Although they both minimize the squared distortion, working with $\similaritys$ or $\dissimilaritys$ lead to different solutions. 
+	In particular, Classical is a linear embedding while Stress is not. 
+\end{remark}
+
+
+
+
+\subsection{Local MDS}
+\label{sec:localMDS}
+Local MDS is motivated by the observation that if the data does not lay in a globally convex subspace, then global distances are a very distorted measure, whereas geodesic distances should be used instead. 
+Their solution is to compute $\dissimilaritys$ using only local distances, and then calling upon MDS.
+
+\begin{remark}[The Non-Linearity of Local MDS]
+	\label{remark:linearity_of_localMDS}
+	Local MDS is typically considered a non-linear-space embedding, thus belonging to Section \ref{sec:dim_reduce_nonlinear}.
+	I currently do not think is the case, as it is presented as a linear space embedding.
+	Maybe Remark \ref{remark:nldr} can explain the confusion in terminology.
+\end{remark}
+
+
+
+\subsection{Isometric Feature Mapping (Isomap)}
+\label{sec:isomap}
+
+Isomap, also known as \emph{principal coordinate analysis}, is another method intimately related to MDS(\S\ref{sec:mds}).\marginnote{Principal Coordinate Analysis}
+
+Isomap follows the same motivation as Local MDS (\S\ref{sec:localMDS}), but with a different algorithm to compute the dissimilarity matrix $\dissimilaritys$.
+
+\begin{remark}[The Non-Linearity of Isomap]
+	Just like Local MDS, Isomap is typically considered a non-linear-space embedding (see Remark \ref{remark:linearity_of_localMDS}).
+	I currently do not think is the case.
+\end{remark}
+
+
+
+
+
+
+
+
+
+% % % % Non linear dimensionality reduction % % % % %
+\section{Non-Linear-Space Embeddings}
+\label{sec:dim_reduce_nonlinear}
+
+We now 
+
+
+
+Section \ref{sec:dim_reduce_linear} deals with representing the data in a \emph{linear} sub space $\manifold$. They all aim at finding a basis which efficiently represents that data, with respect to some target function. 
+In this section, we allow $\manifold$ to be non-linear. 
+We will thus no longer be able to represent the data by its coordinates in some basis.
+
+
+\begin{remark}[Non Linear Dimensionality Reduction]
+	\label{remark:nldr}
+	Do not let the title of this section be confused with the term Non-Linear Dimensionality-Reduction (NLDR).
+	NLDR deals with the nature of the \emph{embedding} operation, and not with the structure of the target manifold $\manifold$ (see also Remark \ref{remark:linear}).\marginnote{NLDR}
+	This section deals with embeddings into a non-linear subspace, regardless of the nature of the embedding operator.
+	Cases of non-linear embeddings (NLDR) into a \emph{linear} manifolds $\manifold$ belong in Section~\ref{sec:dim_reduce_linear}.
+\end{remark}
+
+
+
+
+\subsection{Kernel Principal Component Analysis (kPCA)}
+\label{sec:kpca}
+
+Back to the motivating example from the PCA section (\S\ref{sec:pca}): assume we want to construct a ``bigness'' score, that best separates between individuals, but we no longer constrain it to be a linear function of the height and weight.
+Recalling that the best discrimination between observations means maximizing the variance of the \emph{scores} given to individuals, we could try to find the best separating score $g(x)$ by solving 
+\begin{align}
+\label{eq:kpca_wrong}
+\argmax{g}{\covn{g(X)}}
+\end{align}
+where $g(x)$ maps an individual's features to a score in $\manifold$.
+
+Alas, just like in the supervised learning problem, without any constraints on $\manifold$, thus on $g$, we might overfit \andor not be able to compute $g$ as optimization is done in a infinite dimensional space. 
+We thus have two matters to attend:
+(i) We need to constrain $g(x)$ so that it does not overfit.
+(ii) We need the problem to be computable.
+This is precisely the goal of kPCA. 
+
+We have already encountered a similar problem with Smoothing Splines (\S\ref{sec:smoothing_splines}). It is thus not surprising that the solution has the same form. 
+Namely, if we choose the right $g$'s, the solution of Eq.(\ref{eq:kpca_wrong}) takes a very simple form. 
+The classes of such $g$'s are known as Reproducing Kernel Hilbert Spaces (RKHS). 
+They are discussed in Appendix~\ref{apx:rkhs}.
+
+
+
+\paragraph{Mathematics of kPCA}
+[TODO]
+
+
+
+
+\subsection{Self Organizing Maps (SOM)}
+SOMs, are a non-linear-subspace dimensionality reduction method, aimed at good clustering. 
+It is non-linear because the algorithm (which cannot be cast as an ERM problem) returns an embedding into a non-linear manifold.
+More details in Section~\ref{sec:som}.
+
+
+
+\subsection{Principal Curves and Surfaces}
+
+
+Principal curves (or surfaces), is an algorithm. It cannot be cast as an optimization problem.
+Being a non-linear space embedding method, the algorithm iterates until it returns a curve of a surface.
+In the curve case, it will return a curve with the \emph{self consistency} property. I.e., a curve with a path that is the average of all it's closest data points.\marginnote{Self Consisntecy}
+Roughly speaking, one can think of this curve as a parametrized function, connecting all the k-means cluster centres in the smoothest way possible.
+Using the same, slightly inaccurate depiction, a principal surface is a \emph{surface} connecting these k-means cluster centres.
+We stress that in both cases, the output is a continuous parametrization of the curve or the surface.
+
+It is highly uncommon to approximate the data with surfaces (manifolds) with a dimension larger than $2$, as typically the method is used for projecting the data before visualizing \andor clustering.
+
+
+
+
+
+
+\subsection{Local Linear Embedding (LLE)}
+\label{sec:lle}
+
+
+
+LLE aims at finding linear subspaces that are good approximations of small neighbourhoods of the whole data $X$.
+It is similar in spirit to Isomap (\S\ref{sec:isomap}) and LocalMDS (\S\ref{sec:localMDS}).
+It differs, however, in the way similarities are computed, and in the way embeddings are performed. 
+In particular, as the name may suggest, LLE performs local embeddings to linear subspaces. The resulting approximating manifold $\manifold$, being the ``stitching'' of many linear spaces, is ultimately non linear.
+
+
+
+
+\subsection{Auto Encoders}
+\label{sec:auto_encoders}
+[TODO. AKA auto-associator or Diabolo network]
+
+
+
+\subsection{Matrix Factorization}
+\label{sec:matrix_factorization}
+[TODO- is it generative?]
+
+
+
+\subsection{Information Bottleneck}
+[TODO]
+
+%The \emph{information bottleneck} is an information theoretic framework, due to \cite{tishby_information_1999}, that generalizes the idea of dimensionality reduction and data compression.
+%It is a general statement of the problem of maximal compression of $X$, while preserving as much of the information in $X$ as possible.
+%To state the general problem we require some definitions from information theory.
+%
+%\begin{definition}[Entropy]
+%The entropy of a random variable $\x$ is defined as the expected negative log density of $\x$: 
+%$$\expect{-\log \pdf(\x)}.$$
+%\end{definition}
+%
+%\begin{definition}[Mutual Information]
+%The mutual information between two random variable $\x$ and $\y$ is defined as : 
+%$$\expect{\log \frac{\pdf(\x,\y)}{\pdf(\x) \pdf(\y)}}.$$
+%\end{definition}
+%
+%Informally speaking, the entropy is a measure of the variability of a distribution, and the mutual information is a measure of deviation from independence, i.e., captures the amount of information $\x$ carries on $\y$, and vice-versa.
+%With this intuition, and denoting the compression of $x$ by $y=g(x)$, we may define the compression problem as:
+%\begin{align}
+%	\argmin{g}{arg2}
+%\end{align}
+
+
+\begin{remark}[Information Bottleneck and ICA]
+	[TODO]
+\end{remark}
+
+
+
+
 
 
 
