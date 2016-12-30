@@ -295,6 +295,10 @@ This observation will later be very useful for other dimensionality reduction al
 
 
 
+
+
+
+
 \subsection{Taxonomy}
 \begin{description}
 	\item [Generative vs. algorithmic] Refers to the motivation of the approach. Is it stated as an algorithm, or stated via some generative probabilistic model. 
@@ -319,18 +323,180 @@ This observation will later be very useful for other dimensionality reduction al
 
 
 
+\section{Latent Variable Generative Approaches}
+All generative approaches to dimensionality reduction will specify some unobserved set of variables, which we can observe indirectly up to some measurement noise. 
+The unobservable variables will typically have a lower dimension than the observables, thus, dimension is reduced. 
+We start with the simplest case of linear Factor Analysis. 
+
+
+\subsection{Factor Analysis (FA)}
+
+To fix ideas, we start by revisiting the IQ problem in Example~\ref{ex:iq}:
+\begin{example}[g-factor\footnote{\url{https://en.wikipedia.org/wiki/G_factor_(psychometrics)}}]
+	
+	Assume $n$ respondents answer $p$ quantitative questions: $x_i \in \reals^p, i=1,\dots,n$. 
+	Also assume, their responses are some linear function $\loadings \in \reals^p$ of a single personality attribute, $s_i$. 
+	We can think of $s_i$ as the subject's ``intelligence''.
+	We thus have 
+	\begin{align}
+	x_i = A s_i + \varepsilon_i
+	\end{align}
+	And in matrix notation:
+	\begin{align}
+	\label{eq:factor}
+	X = A \latent +\varepsilon
+	\end{align}
+	The problem is to recover the unobservable intelligence scores, $s_1,\dots,s_n$, from the observed answers $X$.	
+\end{example}
+
+
+Assuming a generative distribution on $\latent$ and $\varepsilon$, we may try to estimate $\loadings \latent$ by assuming some distribution on $\latent$ and $\varepsilon$ and apply maximum likelihood.
+Under standard assumptions on the distribution of $\latent$ and $\varepsilon$, recovering  $\latent$ from $\estim{\loadings\latent}$ is still impossible as there are infinitely many such solutions.
+To see this, consider an orthogonal \emph{rotation} matrix $\rotation$ ($\rotation' \rotation=I$). For each such $\rotation$: $ \loadings \latent=\loadings \rotation' \rotation \latent = \loadings^* \latent^*$.
+While mathematically equivalent, $\loadings$ and $\loadings^*$ may have very different interpretations. 
+This is why many researchers find FA an unsatisfactory inference tool.
+
+\begin{remark}[Identifiability in PCA]
+	The non-uniqueness (non-identifiability) of the FA solution under variable rotation is never mentioned in the PCA context. Why is this?
+	This is because the methods solve different problems. 
+	The reason the solution to PCA is well defined is that PCA does not seek a single $\latent$ but rather a \emph{sequence} of $\latent$ with dimensions growing from $1$ to $n$. 
+\end{remark}
+
+
+
+\paragraph{FA Terminology}
+The FA terminology is slightly different than PCA:
+\begin{itemize}
+	\item \textbf{Factors}: The unobserved attributes $\latent$. 
+	Not to be confused with the \emph{principal components} in the context of PCA.
+	\item \textbf{Loadings}: 
+	The $\loadings$ matrix; the contribution of each attribute to the observed $X$.
+	\item \textbf{Rotation}: An arbitrary orthogonal re-combination of the latent attributes $\latent$ and loadings, which changes the interpretation of the result.
+\end{itemize}
+
+
+The FA literature does offer several heuristics to ``fix'' the solution of the FA. 
+These are known as \emph{rotations}:
+\begin{itemize}
+	\item \textbf{Varimax}: 
+	By far the most popular rotation. Attempts to construct factors that are similar to the original variables, thus facilitating interpretation. 
+	This can be seen as a "soft" approach to sPCA (Sec.\ref{sec:sPCA}).
+	
+	\item \textbf{Quartimax}: 
+	Seeks a minimal number of factors to explain each variable. 
+	May thus result factors that are uninterpretable, since they all rely on the same variables.
+	
+	\item \textbf{Equimax}: A compromise between Varimax and Quartimax. 
+	
+	\item \textbf{Oblimin}: 
+	Relaxes the requirement of the factors to be uncorrelated, so that they may be similar to the original variables; even more so than in varimax. 
+	This facilitates the interpretability of the factors. 
+	
+	\item \textbf{Promax}: 
+	A computationally efficient approximation of oblimin.
+\end{itemize}
+
+\subsubsection{Bibliographic Notes}
+For a brief review of Factor Analysis see \cite{friedman2001elements}.
+For an full exposition, and a discussion of the differences with PCA, see \cite{jolliffe2002principal}.
+
+
+\subsection{Non Linear Factor Analysis}
+Classical FA deals with features, $X$, that are linear in the latent factors, $\latent$. 
+Like any other generative model approach, it can be easily extended to deal with non-linear functions of the latent factors: $X=g(S)$, provided that $g(.)$ is one-to-one. 
+
+
+
+
+
+
+\subsection{Independent Component Analysis (ICA)}
+\label{sec:ica}
+
+
+ICA is a family of latent space models, thus, a \emph{meta-method}.
+It assumes data is generated as some function of the latent variables $\latent$. 
+In many cases this function is assumed to be linear in $\latent$ so that ICA is compared, if not confused, with PCA and even more so with FA. 
+In its most popular form, $X$ is assume to be a \emph{linear} function of the latent independent components: $X=\loadings \latent$.
+
+The fundamental idea of ICA is that $\latent$ has a joint distribution of \emph{non-Gaussian independent} variables. 
+This independence assumption, solves the the non-uniquness of $\latent$ in FA.
+
+Being a generative model, estimation of $\latent$ can then be done using maximum likelihood, or other estimation principles. 
+A popular information theoretic estimation principle, replacing the maximum-likelihood principle, is known as \emph{infomax}.
+
+ICA is a popular technique in signal processing, where $\latent$ is actually the signal, such as sound in Example~\ref{ex:blind-signal}.
+Recovering $\latent$ is thus recovering the original signals mixing in the recorded $X$. 
+
+
+
+\begin{remark}[ICA and FA]
+	The solutions to the (linear) ICA problem can ultimately be seen as a solution to the FA problem with a particular rotation $\rotation$ implied by the probabilistic assumptions on $\latent$.
+	Put differently, the formulation of the (linear) ICA problem, implies a unique rotation, which can be thought of as the rotation that returns components that are as far from Gaussian as possible. 
+\end{remark}
+
+
+\paragraph{Mathematics of ICA}
+For ease of presentation we present a simple setup, which can be considerably generalized. 
+In this setup, we will first analyze the population problem, i.e., in terms of random variables. 
+We thus replace the data $X$, with the random vector $\x$, and afterwards consider implementation for finite samples. 
+\begin{itemize}
+	\item $\x=\loadings \latent$, implying that $\x$ is \emph{linear} in the latent components, and the latent space is of dimension $\rank=p$. It follows that $s=\loadings'X$.
+	\item $\x$ has been pre-whitented, so that $\cov{\x}=I$.
+	\item Distance between distributions are measured using the Kullback-Leibler divergence (KL): $\kl{\x}{\latent}$.
+\end{itemize}
+
+The optimization problem in this simple ICA is to find an orthogonal matrix $\loadings$, for which:
+(i) the components of $\loadings'\x$ are independent;
+(ii) $\loadings'\x$ is a good approximation of $\x$.
+Formally: 
+\begin{align}
+\label{eq:ica_optimization}
+\argmin{\loadings \text{ orthogonal} \;; \loadings'\x \text{ independent}}{\kl{\loadings'\x}{\x}}.
+\end{align}
+
+
+By enforcing the independence constraint in Eq.(\ref{eq:ica_optimization}), and due to the properties of the KL divergence, Eq.(\ref{eq:ica_optimization}) is equivalent to
+\begin{align}
+\label{eq:ica_optimization2}
+\argmin{\loadings \text{ orthogonal}}{\sum_{j=1}^{\rank} \entropy(\loadings_j\x)- \entropy(\x)}
+\end{align}
+where $\entropy(\x)$ denotes the Entropy of the random variable $\x$ (Definition \ref{def:entropy}).
+Now, $\entropy(\x)$ is obviously fixed, so we need to minimize $\entropy(\loadings_j\x)$. 
+A classical result in information theory, is that the Gaussian distribution has the maximal entropy. 
+Minimizing $\entropy(\loadings_j\x)$ can thus be interpreted as finding a matrix $\loadings$ such that its columns return random variables, $\loadings_j\x$, that are as \emph{non-Gaussian} as possible.
+
+This is where the population analysis ends. 
+The insight we take from it, is that finding independent components, is actually finding non-Gaussian combinations of $\x$. 
+The different implementations of ICA, indeed look for a matrix $\loadings$ which returns the most non-Gaussian combinations of the observed $X$. 
+
+
+
+
+\subsubsection{Bibliographic notes}
+For a general discussion of ICA see \cite{jolliffe2002principal}.
+For a brief exposition of the linear ICA see \cite{friedman2001elements}. 
+For a detailed review of ICA see \cite{hyvarinen2000independent}. 
+
+
+
+
+
+
+
+
 \section{Purely Algorithmic Approaches}
 
 
 
 
-\section{Generative Approaches}
 
 
 
 \section{Dealing with the high-dimension}
 
-
+\subsection{Sparse Principal Component Analysis}
+\label{sec:sPCA}
 
 
 
