@@ -62,36 +62,11 @@
 	
 
 
-\section{General Terminology}
-
-\begin{tcolorbox}
-\begin{description}
-	
-	\item[Variable] \Aka \emph{dimension}, or \emph{feature} in the machine learning literature, or \emph{column} for reasons that will be obvious in the next item. 
-	
-	\item[Data] \Aka \emph{sample}, \emph{observations}, depending on your community. 
-	Will typically consist of $n$, $p$ dimensional vectors, i.e., with $p$ variables in each.
-	We typically denote the data as a $n\times p$ matrix $X$. 
-	
-	\item[Manifold] A space which is regular enough so that it is \emph{locally} has all the properties of a linear space. 
-	We will denote an arbitrary manifold by $\manifold$.
-	
-	
-	\item[Embedding] Informally speaking: a ``shape preserving'' mapping of a space into another. 
-	
-	\item[Linear Embedding] An embedding done via a linear operation (thus representable by a matrix). 
-	
-	\item[Generative Model] Known to statisticians as the \emph{sampling distribution}. 
-	The assumed stochastic process that generated the observed data. 
-	
-\end{description}
-\end{tcolorbox}
 
 
 
 
-
-\section{Principal Component Analysis}
+\section{Enter the King: Principal Component Analysis}
 \label{sec:pca}
 
 \emph{Principal Component Analysis} (PCA) is such a basic technique, it has been rediscovered and renamed independently in many fields. 
@@ -274,16 +249,64 @@ This observation will later be very useful for other dimensionality reduction al
 
 
 
+\section{Preliminaries}
+
+\subsection{Terminology}
+
+\begin{tcolorbox}
+	\begin{description}
+		
+		\item[Variable] \Aka \emph{dimension}, or \emph{feature} in the machine learning literature, or \emph{column} for reasons that will be obvious in the next item. 
+		
+		\item[Data] \Aka \emph{sample}, \emph{observations}, depending on your community. 
+		Will typically consist of $n$, $p$ dimensional vectors, i.e., with $p$ variables in each.
+		We typically denote the data as a $n\times p$ matrix $X$. 
+		
+		\item[Manifold] A space which is regular enough so that it is \emph{locally} has all the properties of a linear space. 
+		We will denote an arbitrary manifold by $\manifold$.
+		
+		
+		\item[Embedding] Informally speaking: a ``shape preserving'' mapping of a space into another. 
+		
+		\item[Linear Embedding] An embedding done via a linear operation (thus representable by a matrix). 
+		
+		\item[Generative Model] Known to statisticians as the \emph{sampling distribution}. 
+		The assumed stochastic process that generated the observed data. 
+		
+	\end{description}
+\end{tcolorbox}
 
 
 
 
-\section{Factor Analysis (FA)}
+\subsection{Motivations}
+\begin{enumerate}
+	\item Scoring (Hotelling motivation).
+	\item Recovering latent signal (Blind signal reconstruction).
+	\item Improving SNR (before supervised learning).
+	\item Decreasing computational complexity. 
+\end{enumerate}
+
+
+\subsection{Taxonomy }
+\begin{enumerate}
+	\item Linear $\manifold$ vs. non-linear manifold. 
+\end{enumerate}
 
 
 
 
-\section{Independent Component Analysis (ICA)}
+
+\section{Purely Algorithmic Approaches}
+
+
+
+
+\section{Generative Approaches}
+
+
+
+\section{Dealing with the high-dimension}
 
 
 
