@@ -638,28 +638,28 @@ Isomap, also known as \emph{Principal Coordinate Analysis}, operates very simila
 
 
 
-
 \subsection{Kernel Principal Component Analysis (kPCA)}
 \label{sec:kpca}
 
-Back to the motivating example from the PCA section (\S\ref{sec:pca}): assume we want to construct a ``bigness'' score, that best separates between individuals, but we no longer constrain it to be a linear function of the height and weight.
+Back to the height-weight example (\ref{ex:bmi}): assume we want to construct a ``bigness'' score, that best separates between individuals, but we no longer constrain it to be a linear function of the height and weight.
 Recalling that the best discrimination between observations means maximizing the variance of the \emph{scores} given to individuals, we could try to find the best separating score $g(x)$ by solving 
 \begin{align}
 \label{eq:kpca_wrong}
-\argmax{g}{\covn{g(X)}}
+	\argmax{g}{\cov{g(\x)}}
 \end{align}
 where $g(x)$ maps an individual's features to a score in $\manifold$.
 
-Alas, just like in the supervised learning problem, without any constraints on $\manifold$, thus on $g$, we might overfit \andor not be able to compute $g$ as optimization is done in a infinite dimensional space. 
+Without any constraints on $\manifold$, thus on $g$, we will overfit \andor not be able to compute $g$ as optimization is done in a infinite dimensional space. 
 We thus have two matters to attend:
-(i) We need to constrain $g(x)$ so that it does not overfit.
+(i) We need to constrain $g(x)$.
 (ii) We need the problem to be computable.
 This is precisely the goal of kPCA. 
 
-We have already encountered a similar problem with Smoothing Splines (\S\ref{sec:smoothing_splines}). It is thus not surprising that the solution has the same form. 
-Namely, if we choose the right $g$'s, the solution of Eq.(\ref{eq:kpca_wrong}) takes a very simple form. 
+If we choose the right $g$'s, the solution of Eq.(\ref{eq:kpca_wrong}) may take a very simple form. 
 The classes of such $g$'s are known as Reproducing Kernel Hilbert Spaces (RKHS). 
-They are discussed in Appendix~\ref{apx:rkhs}.
+At an intuitive level, RKHS's are subspaces of ``the space of all functions'', which:
+(i) Are defined via a \emph{kernel function} we need to specify. Each kernel defines a different subspace. 
+(ii) They have a very particular structure so that finding $g$ has a complexity polynomial in the number of observations, $n$. 
 
 
 
@@ -670,23 +670,26 @@ They are discussed in Appendix~\ref{apx:rkhs}.
 
 
 \subsection{Self Organizing Maps (SOM)}
-SOMs, are a non-linear-subspace dimensionality reduction method, aimed at good clustering. 
-It is non-linear because the algorithm (which cannot be cast as an ERM problem) returns an embedding into a non-linear manifold.
-More details in Section~\ref{sec:som}.
+SOMs are special in our context in that the target $\manifold$, is not a bona-fide manifold. 
+SOMs are typically designed for visualization, so they embed into a $2$ dimensional space. 
+The target space, $\manifold$, is a \emph{polygon mesh}.
+Polygon meshes are easy to compute with, but hard to analyze mathematically. 
+In particular, the ``stitching'' between polygons is a very irregular structure that does not satisfy the definition of a \emph{manifold}.
 
 
 
 \subsection{Principal Curves and Surfaces}
 
 
-Principal curves (or surfaces), is an algorithm. It cannot be cast as an optimization problem.
-Being a non-linear space embedding method, the algorithm iterates until it returns a curve of a surface.
-In the curve case, it will return a curve with the \emph{self consistency} property. I.e., a curve with a path that is the average of all it's closest data points.\marginnote{Self Consisntecy}
-Roughly speaking, one can think of this curve as a parametrized function, connecting all the k-means cluster centres in the smoothest way possible.
-Using the same, slightly inaccurate depiction, a principal surface is a \emph{surface} connecting these k-means cluster centres.
-We stress that in both cases, the output is a continuous parametrization of the curve or the surface.
+The algorithm iterates until it returns a curve of a surface.
+In the curve case, it will return a curve with the \emph{self consistency} property. 
+I.e., a curve with a path that is the average of all it's closest data points.\marginnote{Self Consisntecy}
+Roughly speaking, one can think of this as a generalization of k-means from points to curves. 
+Each such curve smoothly connects the k-means cluster centres.
+Using the same, slightly inaccurate depiction, a \emph{principal surface} is manifold with dimension greater than $1$, connecting these k-means cluster centres.
+In both cases, the output is a continuous parametrization of the curve or the surface.
 
-It is highly uncommon to approximate the data with surfaces (manifolds) with a dimension larger than $2$, as typically the method is used for projecting the data before visualizing \andor clustering.
+It is highly uncommon to approximate the data with manifolds with a dimension larger than $2$, as typically the method is used for projecting the data before visualizing \andor clustering.
 
 
 
@@ -696,12 +699,10 @@ It is highly uncommon to approximate the data with surfaces (manifolds) with a d
 \subsection{Local Linear Embedding (LLE)}
 \label{sec:lle}
 
-
-
-LLE aims at finding linear subspaces that are good approximations of small neighbourhoods of the whole data $X$.
-It is similar in spirit to Isomap (\S\ref{sec:isomap}) and LocalMDS (\S\ref{sec:localMDS}).
+LLE is similar in spirit to Isomap and LocalMDS.
 It differs, however, in the way similarities are computed, and in the way embeddings are performed. 
-In particular, as the name may suggest, LLE performs local embeddings to linear subspaces. The resulting approximating manifold $\manifold$, being the ``stitching'' of many linear spaces, is ultimately non linear.
+Unlike localMDS, which computes local distances and ends with a \emph{global embedding}, LLE computes local distances and performs \emph{local linear embeddings}.
+The resulting approximating manifold $\manifold$, being the ``stitching'' of many linear spaces, is ultimately non linear.
 
 
 
@@ -714,7 +715,7 @@ In particular, as the name may suggest, LLE performs local embeddings to linear 
 
 \subsection{Matrix Factorization}
 \label{sec:matrix_factorization}
-[TODO- is it generative?]
+[TODO]
 
 
 
