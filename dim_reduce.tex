@@ -539,13 +539,14 @@ Very roughly speaking, MDS can be thought of as a variation on PCA, that begins 
 We have already seen in Section~\ref{sec:pca_as_graph} that PCA really only needs a similarity graph. 
 The embedding into two dimensions is motivated by that fact that MDS is typically used for visualization. 
 
-MDS aims at representing a network\footnote{The term Graph is typically used in this context instead of Network. But a graph allows only yes/no relations, while a network, which is a weighted graph, allows a continous measure of similarity (or dissimilarity). It is thus more appropriate.} of distances (or similarities) between observations, by embedding the observations in a $\rank$ dimensional \emph{linear} subspace, while preserving the original distances.
-The network may be obtained by computing some similarity (or dissimilarity) measure with the raw features $X$, or simply because the data itself is a network (social, communication, etc.).
+MDS aims at embedding a graph of distances, while preserving the original distances.
+Basic results in graph/network theory suggest that the geometry of a graph cannot be preserved when embedding it into lower dimensions. 
+The differences between MDS algorithms thus rests in the penalization for geometric distortions. 
 
-Since MDS mainly serves for visualizing data, it is most natural to use $\rank=2$. 
-The embedding will distort the original distances (or\dots), and may even change the ordering of the observations. The good news is that it is easier to visualize \andor cluster them in their new simplified representation. 
+\begin{remark}[MDS and PCA]
+	If the input of MDS is the Euclidean distances between points, then MDS with ``classical scaling'' (\aka Torgerson scaling) returns the exact same embedding as PCA with $2$ PCs.
+\end{remark}
 
-If the input of MDS is the empirical covariance similarity network, then MDS with ``classical scaling'' (see below) returns the exact same solution as PCA.
 
 The embedding is merely the assigning of each point to a location in some lower dimensional linear space $\manifold$. 
 The assignment is driven by a \emph{stress function} which penalizes for the average distortion created by the embedding.
