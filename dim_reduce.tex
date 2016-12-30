@@ -329,10 +329,12 @@ The reader is thus advised to try and place each approach along the following di
 	Many dimensionality reduction methods only need a dissimilarity (i.e. distance) graph to operate. 
 	The Euclidean norm is historically the most popular.
 	Some methods are agnostic to the norm used, while some, some have Euclid hard-wired into them, and some, hard-wire themselves with some other norm. 
-	
 \end{description}
 
-
+\begin{remark}[Non linear manifolds and non-linear embeddings]
+	The distinction we make between non-linear embeddings and non-linear manifolds is non-standard in the literature. 
+	The term \emph{non-linear space embedding} is used in both context. 
+\end{remark}
 
 
 
@@ -611,6 +613,7 @@ Typical stress functions include:
 \label{sec:localMDS}
 
 \begin{example}[Non-Euclidean surface]
+\label{ex:non-euclidean}
 	Consider data of coordinates on the globe. 
 	At short distances, constructing a dissimilarity graph with Euclidean distances will capture the true distance between points. 
 	At long distances, however, the Euclidean distances as grossly inappropriate. 
@@ -618,16 +621,11 @@ Typical stress functions include:
 	Being a highly folded surface, the Euclidean distance between points is far from the true geodesic distances along the cortex's surface\footnote{Then again, it is possible that the true distances are the white matter fibers connecting going within the cortex, in which case, Euclidean distances are more appropriate than geodesic distances. We put that aside for now.}.
 \end{example}
 
-Local MDS is motivated by the observation that if the data does not lay in a globally convex subspace, then global distances are a very distorted measure, whereas geodesic distances should be used instead. 
-Their solution is to compute $\dissimilaritys$ using only local distances, and then calling upon MDS.
+Local MDS is aimed at solving the case where we don't know how to properlky measure distances. 
+As such, and unlike MDS, it is an algorithm that compounds both the construction of the dissimilarity graph, and the embedding. 
+The solution of local MDS, as the name suggests, rests on the computation of \emph{local} distances, where the Euclidean assumption may still be plausible, and then aggregate many such local distances, before calling upon regular MDS.
 
-\begin{remark}[The Non-Linearity of Local MDS]
-	\label{remark:linearity_of_localMDS}
-	Local MDS is typically considered a non-linear-space embedding, thus belonging to Section \ref{sec:dim_reduce_nonlinear}.
-	I currently do not think is the case, as it is presented as a linear space embedding.
-	Maybe Remark \ref{remark:nldr} can explain the confusion in terminology.
-\end{remark}
-
+Because local MDS ends with a regular MDS, it can be seen as a non-linear embedding into a linear $\manifold$.
 
 
 
@@ -636,43 +634,7 @@ Their solution is to compute $\dissimilaritys$ using only local distances, and t
 \subsection{Isometric Feature Mapping (Isomap)}
 \label{sec:isomap}
 
-Isomap, also known as \emph{principal coordinate analysis}, is another method intimately related to MDS(\S\ref{sec:mds}).\marginnote{Principal Coordinate Analysis}
-
-Isomap follows the same motivation as Local MDS (\S\ref{sec:localMDS}), but with a different algorithm to compute the dissimilarity matrix $\dissimilaritys$.
-
-\begin{remark}[The Non-Linearity of Isomap]
-	Just like Local MDS, Isomap is typically considered a non-linear-space embedding (see Remark \ref{remark:linearity_of_localMDS}).
-	I currently do not think is the case.
-\end{remark}
-
-
-
-
-
-
-
-
-
-% % % % Non linear dimensionality reduction % % % % %
-\section{Non-Linear-Space Embeddings}
-\label{sec:dim_reduce_nonlinear}
-
-We now 
-
-
-
-Section \ref{sec:dim_reduce_linear} deals with representing the data in a \emph{linear} sub space $\manifold$. They all aim at finding a basis which efficiently represents that data, with respect to some target function. 
-In this section, we allow $\manifold$ to be non-linear. 
-We will thus no longer be able to represent the data by its coordinates in some basis.
-
-
-\begin{remark}[Non Linear Dimensionality Reduction]
-	\label{remark:nldr}
-	Do not let the title of this section be confused with the term Non-Linear Dimensionality-Reduction (NLDR).
-	NLDR deals with the nature of the \emph{embedding} operation, and not with the structure of the target manifold $\manifold$ (see also Remark \ref{remark:linear}).\marginnote{NLDR}
-	This section deals with embeddings into a non-linear subspace, regardless of the nature of the embedding operator.
-	Cases of non-linear embeddings (NLDR) into a \emph{linear} manifolds $\manifold$ belong in Section~\ref{sec:dim_reduce_linear}.
-\end{remark}
+Isomap, also known as \emph{Principal Coordinate Analysis}, operates very similarly to local MDS, but with a different algorithm to compute the dissimilarity matrix.
 
 
 
