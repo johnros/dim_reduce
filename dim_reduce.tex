@@ -22,7 +22,6 @@
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black,filecolor=black,urlcolor=black}
 
 
-
 \author{Jonathan Rosenblatt \\ Ben Gurion University}
 
 %% OPTIONAL MACRO DEFINITIONS
@@ -63,12 +62,12 @@
 	
 
 
-\section{Terminology}
+\section{General Terminology}
 
 \begin{tcolorbox}
 \begin{description}
 	\item[Data] \Aka \emph{sample}, \emph{observations}, depending on your community. 
-	Will typically consist of $n$, $p$ dimensional row vectors.
+	Will typically consist of $n$, $p$ dimensional vectors.
 	We typically denote the data as an $n\times p$ matrix $X$. 
 	
 	\item[Manifold] A space which is regular enough so that it is \emph{locally} has all the properties of a linear space. 
@@ -119,7 +118,9 @@ But $30$ years before him, \citet{pearson1901liii} derived the same procedure wi
 Pearson was also trying to give each individual a score. 
 He did not care about variance maximization, however. 
 He simply wanted a small set of coordinates in some (linear) space that approximates the original data well. 
-As it turns out, the best linear-space approximation of $X$ is also the variance maximizing one. Pearson and Hotelling thus arrived to the same solution, with different motivations. 
+As it turns out, the best linear-space approximation of $X$ is also the variance maximizing one. 
+More precisely: the \emph{sequence} of $1,\dots,p$ dimensional linear spaces that best approximate $X$, is exactly the sequence of $1,\dots,p$ dimensional scores, that best separate between the $n$ samples. 
+Pearson and Hotelling (among others) thus arrived to the exact same solution, with different motivations. 
 
 
 
@@ -127,25 +128,36 @@ As it turns out, the best linear-space approximation of $X$ is also the variance
 
 \subsubsection{Scree Plot}
 \label{sec:scree_plot}
-[TODO]
+
+
 
 
 
 \subsubsection{Bi Plot}
 \label{sec:bi_plot}
-[TODO]
+The \emph{Bi-Plot} shows the two first scores of the original data points.
+These scores are known as the \emph{Principal Componets} (PCs). \marginnote{Principal Components}
+The contribution of each original variable to each PC, is called the \emph{Loadings}.
+The plot also shows the contribution of each of the original variables to each of the scores. 
+See example in Figure~\ref{fig:usaarrests}.
+
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.7\linewidth]{USAarrests}
+	\caption{\textbf{BiPlot}.
+		Arrest type data for USA states. 
+		Data includes urban population size, number of rape related arrests, assault related, and murder related ($p=4$). 
+		Each city is presented against its two first PCs. 
+		Arrows encode the loadings. 
+		They show that PC1 encodes a general crime level, as it is the average of all type of crimes. 
+		PC2 measures the level of urbanization, as it is dominated by the UrbanPopulation variable. 		
+		\\ Source: \url{https://goo.gl/85qtKv}}
+	\label{fig:usaarrests}
+\end{figure}
 
 
 
-\subsubsection{Intuition}
-\label{sec:pca_intuition}
-
-Notice we have currently offered two motivations for PCA: 
-(i) Find linear combinations that best distinguish between observations, i.e., maximize variance. 
-(ii) Find the linear subspace the bets approximates the data.
-The reason these two problems are equivalent, is due to the use of the squares error.
-Informally speaking, the data has some total variance. This variance can be decomposed into the part captured in $\manifold$, and the part not captured\footnote{Analogous to $SST=SSR+SSE$ in linear regression.}. 
-Since the variance in the data consists of sums of squares, minimizing the distance from $X$ to $\manifold$, is the same as maximizing the variance of $X \project \manifold$, since their sum is fixed.
 
 
 
@@ -154,35 +166,39 @@ Since the variance in the data consists of sums of squares, minimizing the dista
 We now present the derivation of PCA from the two different motivations.
 
 
-
-
-\paragraph{The Variance Maximization View}
-Starting with the first principal component.
-If $\cov{x}=\Sigma$ then for a fixed vector $v$: $\cov{vx}=v \Sigma v'$.
-Maximizing w.r.t. $v$ does not make sense as $\cov{vx}$ will explode. 
-It is most convenient, mathematically, to constrain the $l_2$ norm: $\normII{v}^2=1$.
-Maximizing under a constraint, using Lagrange-Multipliers: 
-\begin{align}
-\argmax{v}{v \Sigma v' - \lambda (\normII{v}^2-1)}.
-\end{align}
-Differentiating w.r.t $v$ and equating zero: 
-\begin{align}
-(\Sigma- \lambda I)v'=0
-\end{align}
-So the $P$ solutions for $v$ are the eigen-vectors of $\Sigma$. Which of them to pick? 
-To find a \emph{global} maximum we return to the original problem, as plug our result:
-\begin{align}
-\label{eq:pca_maximal_variance}
-\argmax{v:\normII{v}^2=1}{v \Sigma v' }=\argmax{\lambda}{v \lambda v' }
-\end{align}
-so that the global maximum is obtained with the largest eigen-value $\lambda$.
-
-Readers familiar with matrix norms will recognize that this is simply the derivation of the operator norm of $\Sigma$.
-
-The second principal component can be found by solving the same problem, with the additional constraint of $v_2$ orthogonal to $v_1$.
-
-The last missing ingredient is that instead of the true covariance between the features, $\Sigma$, we use the (scaled) empirical covariance $X'X$.
-
+\begin{proof}
+	The sketch of the proof is the following:
+	We will first show that the weight vector that maximizes the variance is the eigenvector that corresponds to the first principal component.
+	We will do so for the \emph{population} covariance, $\Sigma$, and wrap up by plugging its empirical counterpart, $X'X$ (assuming a centered $X$). 
+		
+	Starting with the first principal component.
+	For a random $p$-vector, $\x$ denote $\Sigma:=\cov{\x}$, so that for a fixed $p$-vector $v$: $\cov{v'\x}=v' \Sigma v$.
+	Finding a linear combination of $\x$ that best separates individuals, means maximizing $\cov{v'x}$
+	w.r.t. to $v$.
+	Clearly, $\cov{v'x}$ may explode if any $v$ is allowed. 
+	It is most convenient, mathematically, to constrain the $l_2$ norm: $\normII{v}^2=1$.
+	Maximizing under a constraint, using Lagrange-Multipliers: 
+	\begin{align}
+	\argmax{v}{v \Sigma v' - \lambda (\normII{v}^2-1)}.
+	\end{align}
+	Differentiating w.r.t $v$ and equating zero: 
+	\begin{align}
+	(\Sigma- \lambda I) v = 0
+	\end{align}
+	So the $P$ solutions for $v$ are the eigen-vectors of $\Sigma$. Which of them to pick? 
+	To find a \emph{global} maximum we return to the original problem, as plug our result:
+	\begin{align}
+	\label{eq:pca_maximal_variance}
+	\argmax{v:\normII{v}^2=1}{v \Sigma v' }=\argmax{\lambda}{v \lambda v' }
+	\end{align}
+	so that the global maximum is obtained with the largest eigen-value $\lambda$.
+	
+	Readers familiar with matrix norms will recognize that this is simply the derivation of the operator norm of $\Sigma$.
+	
+	The second principal component can be found by solving the same problem, with the additional constraint of $v_2$ orthogonal to $v_1$.
+	
+	The last missing ingredient is that instead of the true covariance between the features, $\Sigma$, we use the (scaled) empirical covariance $X'X$.
+\end{proof}
 
 
 
@@ -208,6 +224,23 @@ Using some algebraic identities \cite[Eq.(23.3)]{shalev-shwartz_understanding_20
 At this point we should note that the linear-space embedding problem has collapsed to the variance maximization problem! 
 If you do not see this, just set $\rank=1$ and compare to Eq.(\ref{eq:pca_maximal_variance}), recalling that $X'X$ estimates the features' covariance $\Sigma$.
 
+
+
+
+
+
+
+
+\subsubsection{Intuition}
+\label{sec:pca_intuition}
+
+Notice we have currently offered two motivations for PCA: 
+(i) Find linear combinations that best distinguish between observations, i.e., maximize variance. 
+(ii) Find the linear subspace the bets approximates the data.
+The reason these two problems are equivalent, is due to the use of the squares error.
+Informally speaking, the data has some total variance. 
+This variance can be decomposed into the part captured in $\manifold$, and the part not captured\footnote{Analogous to $SST=SSR+SSE$ in linear regression.}. 
+Since the variance in the data consists of sums of squares, minimizing the distance from $X$ to $\manifold$, is the same as maximizing the variance of $X \project \manifold$, since their sum is fixed.
 
 
 
