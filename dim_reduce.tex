@@ -233,7 +233,22 @@ The only unresolved matter- is why the solution to the variance maximization pro
 This is simply because all the scores, are linear combinations of columns of $X$, thus span a linear subspace, as is sought in the linear-subspace approximation view. 
 
 
-\subsection{Can you always find $p$ PCs?}
+\subsection{How many PCs can you find?}
+On the face of it, with $p$ variables you can find $p$ PCs. 
+Things are not that simple however.
+
+In the population version of the problem, i.e., when $\Sigma$ is known, there may be as many non zero eigenvalues as the rank of $\Sigma$. 
+Stating that $\Sigma$ is full rank, is stating that the variables of $\x$ are not fully correlated.
+
+In the empirical version of the problem, i.e., when $X'X$ is known, there may be as many non zero eigenvalues as the rank of $X'X$.
+Clearly, if $p>n$, variables of $X$ have to be linearly dependent, so that $X'X$ cannot be of full rank.
+Problems do not end when $p<n$. 
+This is because if $p<n$ but $p\sim n$ then we do not have many observations per estimated parameter. 
+In the statistical literature, this is known as a \emph{high dimensional} problem. 
+In the engineering parlance, we say we have low \emph{signal to noise}.
+For a rigorous treatment of the statistical properties of PCA, see \cite{nadler2008finite}.
+ 
+
 
 
 
