@@ -129,12 +129,6 @@ Pearson and Hotelling (among others) thus arrived to the exact same solution, wi
 
 
 
-\subsubsection{Scree Plot}
-\label{sec:scree_plot}
-
-
-
-
 
 \subsubsection{Bi Plot}
 \label{sec:bi_plot}
@@ -161,6 +155,9 @@ See example in Figure~\ref{fig:usaarrests}.
 
 
 
+\subsubsection{Scree Plot}
+\label{sec:scree_plot}
+[TODO]
 
 
 
@@ -236,6 +233,7 @@ The only unresolved matter- is why the solution to the variance maximization pro
 This is simply because all the scores, are linear combinations of columns of $X$, thus span a linear subspace, as is sought in the linear-subspace approximation view. 
 
 
+\subsection{Can you always find $p$ PCs?}
 
 
 
@@ -243,19 +241,15 @@ This is simply because all the scores, are linear combinations of columns of $X$
 \subsection{PCA as a Graph Method}
 \label{remark:pca_as_graph}
 
-Notice the following equivalent facts: 
-(i) The solution to the PCA problem only depends on the covariance $\Sigma$. 
-(ii) $X$ is centered before computing the PCA. 
-This means that the PCA solution is invariant to the location of the data. 
+We will now show that we may find the sequence of best approximating linear subspaces, without the actual measurements, but only with a similarity graph. 
+In particular, with the $n\times n$ graph $\dissimilaritys$ of distances between the samples. 
+It should come of no surprise that we done need the actual measurements, $X$, since the optimal loadings, $v$, only depend on the covariance $\Sigma$, or its empirical counterpart, $X'X$. 
 
-Starting from the maximal variance motivation, it is perhaps not surprising that PCA depends only on the similarities between features, as measured by their empirical covariance. 
-The linearity of the target manifold was there by assumption. 
+This means that the PCA solution is invariant to the \emph{location} of the data. 
+Put differently, the values of $X$ are of no importance given $X'X$, which can be informally thought of as a sufficient statistic\footnote{It is not a proper sufficient statistic as no generative model has been assumed.}.  
 
-Following the linear-space embedding motivation, it is was surprising that the solutions depend only on the empirical covariances. This fact can be attributed to the use of squared error loss, which implied we were trying to decompose the total variance into the part in $\manifold_\rank$ and the orthogonal part.
-
-From both motivations we see that the values of $X$ are of no importance given $X'X$, which can be informally thought of as a sufficient statistic\footnote{It is not a proper sufficient statistic as no generative model has been assumed.}.  
-
-In-turn, $X'X$ depends only on the empirical covariances between \emph{individuals} ($\similaritys=XX'$), or on the Euclidean distances between individuals ($\dissimilaritys=(\norm{x_i-x_j})$).
+For centered $X$, $X'X$ estimates the covariance between variables. 
+ ($\similaritys=XX'$), or on the Euclidean distances between individuals ($\dissimilaritys=(\norm{x_i-x_j})$).
 
 The building blocks of all these graph-based dimensionality reduction methods are:
 \begin{enumerate}
