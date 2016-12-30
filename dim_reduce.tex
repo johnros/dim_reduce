@@ -67,9 +67,15 @@
 
 \begin{tcolorbox}
 \begin{description}
-	\item[Manifold] A space which is regular enough so that it is \emph{locally} has all the properties of a linear space. 
+	\item[Data] \Aka \emph{sample}, \emph{observations}, depending on your community. 
+	Will typically consist of $n$, $p$ dimensional row vectors.
+	We typically denote the data as an $n\times p$ matrix $X$. 
 	
-	\item[Embedding] A mapping from one space into another. 
+	\item[Manifold] A space which is regular enough so that it is \emph{locally} has all the properties of a linear space. 
+	We will denote an arbitrary manifold by $\manifold$.
+	
+	
+	\item[Embedding] Informally speaking: a ``shape preserving'' mapping of a space into another. 
 	
 	\item[Linear Embedding] An embedding done via a linear operation (thus representable by a matrix). 
 	
@@ -103,14 +109,17 @@ It can be found under the names of
 and possibly more\footnote{\url{http://en.wikipedia.org/wiki/Principal_component_analysis} }.
 The many names are quite interesting as they offer an insight into the different problems that led to PCA's (re)discovery.
 
-Starting with an example, consider human height and weight data. 
-While clearly two dimensional data, you don't really need both to understand how ``big'' are the people in the data. 
-This is because, height and weight vary mostly along a single dimension, which can be interpreted as the ``bigness'' of an individual. 
-This is why, physicians use the Body Mass Index (BMI) as an indicator of size, instead of a two-dimensional measurement.
-Assume you now wish to give each individual a size score, that is a linear combination of height and weight: PCA does just that. It returns the linear combination that has the most variability, i.e., the combination which best distinguishes between individuals. 
 
-The variance maximizing motivation above was the one that guided Hotelling \citep{hotelling_analysis_1933}.
-About $30$ years before him, Karl Pearson \citep{pearson_liii._1901} derived the same procedure with a different motivation in mind. Pearson was also trying to give each individual a score. He did not care about variance maximization, however. He simply wanted a small set of coordinates in some (linear) space that approximates the original features well. As it turns out, the best linear-space approximation of $X$ is also the variance maximizing one. Pearson and Hotelling thus arrived to the same solution, with different motivations. 
+Return to the BMI problem in Exampl~\ref{ex:bmi}.
+Assume you now wish to give each individual a ``size score'', that is a \textbf{linear} combination of height and weight: PCA does just that. 
+It returns the linear combination that has the largest variability, i.e., the combination which best distinguishes between individuals. 
+
+The variance maximizing motivation above was the one that guided Hotelling \citet{hotelling1933analysis}.
+But $30$ years before him, \citet{pearson1901liii} derived the same procedure with a different motivation in mind. 
+Pearson was also trying to give each individual a score. 
+He did not care about variance maximization, however. 
+He simply wanted a small set of coordinates in some (linear) space that approximates the original data well. 
+As it turns out, the best linear-space approximation of $X$ is also the variance maximizing one. Pearson and Hotelling thus arrived to the same solution, with different motivations. 
 
 
 
