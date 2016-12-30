@@ -377,6 +377,7 @@ This is why many researchers find FA an unsatisfactory inference tool.
 	The reason the solution to PCA is well defined is that PCA does not seek a single $\latent$ but rather a \emph{sequence} of $\latent$ with dimensions growing from $1$ to $n$. 
 \end{remark}
 
+
 \begin{remark}[Linear and non-linear embeddings]
 	In classical FA in Eq.(\ref{eq:factor}) is clearly an embedding to a linear space. 
 	The one spanned by $\latent$. 
@@ -552,17 +553,15 @@ The different types of MDSs, such as \emph{Classical MDS}, and \emph{Sammon Mapp
 \begin{remark}[MDS and Graph Drawing]
 	If the purposes of lowering the dimension is visualization, then the dimension of $\manifold$ will typically be $2$. 
 	Embedding in $2$ dimensional linear spaces is of great interest for visualization, and indeed there is a whole field called \emph{Graph Drawing}\footnote{\url{https://en.wikipedia.org/wiki/Graph_drawing}}, which focuses on these problems.
+	For instance, the very popular \emph{force embedding}\footnote{\url{https://en.wikipedia.org/wiki/Force-directed_graph_drawing}} in the D3 java-script libraries stems from the Graph Drawing literature. 
 \end{remark}
 
-
-The embedding is merely the assigning of each point to a location in some lower dimensional linear $\manifold$. 
-The assignment is driven by a \emph{stress function} which penalizes for the distortion created by the embedding.
-The different types of MDSs, such as \emph{Classical MDS}, and \emph{Sammon Mappings}, differ in the stress function driving the embedding.
 
 Sadly, MDS may scale poorly to large dissimilarity matrices, and the optimization may converge to a local minimum.
 Being a data embedding, and not an embedding function, when new data points are made available, the embedding will have to be re-learned.
 
-For more on MDS see Section 14.8 in \cite{hastie_elements_2003} or \cite{borg_modern_2005}.
+\subsubsection{Bibliographic notes}
+For more on MDS see Section 14.8 in \cite{friedman2001elements} or \cite{borg_modern_2005}.
 
 
 
@@ -578,14 +577,14 @@ The $z_i$'s are set to minimize some penalty for geometric deformation called th
 Typical stress functions include:
 \begin{description}
 	
-	\item[Classical MDS] Using the centred inner product (i.e. empirical covariance) as the similarity measure and minimizes the squared distortion:
+	\item[Classical MDS] \Aka \emph{Torgerson scaling} begins with the empirical covariance as the similarity measure and minimizes the squared distortion:
 	$\similarity_{i,j}:= \scalar{x_i-\bar x}{x_j-\bar{x}}$ and the new location are given by
 	\begin{align}
 	\label{eq:mds_classical}
 	\argmin{z_1,\dots,z_n}{\sum_{i,j=1}^{n} (\similarity_{i,j}-\scalar{z_i-\bar z}{z_j-\bar{z}} )^2}.
 	\end{align}
 	
-	\item[Least Squares] Also known as \emph{Kruskal-Shepard}. Also minimizes the squared distortion. 
+	\item[Least Squares] \Aka \emph{Kruskal-Shepard} starts with a Euclidean distance graph and minimizes the squared distortion. 
 	\begin{align}
 	\label{eq:mds_stress}
 	\argmin{z_1,\dots,z_n}{\sum_{i \neq j} (\dissimilarity_{i,j}-\norm{z_i-z_j} )^2}.
@@ -601,8 +600,8 @@ Typical stress functions include:
 
 
 \begin{remark}[Classical and Least Squares MDS]
-	Although they both minimize the squared distortion, working with $\similaritys$ or $\dissimilaritys$ lead to different solutions. 
-	In particular, Classical is a linear embedding while Stress is not. 
+	Although they both minimize the squared distortion, working with similarities or dissimilarities lead to different solutions. 
+	In particular, Classical is a linear embedding into a linear space (it is identical to PCA) while Stress is a non-linear embedding into a linear space. 
 \end{remark}
 
 
