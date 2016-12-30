@@ -280,18 +280,40 @@ This observation will later be very useful for other dimensionality reduction al
 
 
 \subsection{Motivations}
-\begin{enumerate}
-	\item Scoring (Hotelling motivation).
-	\item Recovering latent signal (Blind signal reconstruction).
-	\item Improving SNR (before supervised learning).
-	\item Decreasing computational complexity. 
-\end{enumerate}
+
+\begin{description}
+	\item [Scoring] Give each observation a score (Hotelling motivation).
+
+	\item [Latent structure] Recover unobservables from indirect measurements. 
+	E.g: Blind signal reconstruction, CT scan, cryo-electron microscopy, etc. 
+	
+	\item [SNR] Denoise measurements before further processing like clustering, supervised learning, etc. 
+	
+	\item [Compression] Save on RAM ,CPU, and communication when operating on a lower dimensional representation of the data. 
+	
+\end{description}
 
 
-\subsection{Taxonomy }
-\begin{enumerate}
-	\item Linear $\manifold$ vs. non-linear manifold. 
-\end{enumerate}
+
+\subsection{Taxonomy}
+\begin{description}
+	\item [Generative vs. algorithmic] Refers to the motivation of the approach. Is it stated as an algorithm, or stated via some generative probabilistic model. 
+	PCA is purely algorithmic. 
+
+	\item [Linear $\manifold$ vs. non-linear $\manifold$]. 
+	Is the target manifold linear or not?
+	In PCA, $\manifold$ is linear.
+
+	\item [Linear embedding vs. non-linear embedding]. 
+	Is the embedding into $\manifold$ a linear operation?
+	In PCA, the embedding is linear, and indeed, represented by a matrix. 
+	
+	\item [Learning an embedding vs. an embedding function?]
+	Will we need to apply the reduction to new data? 
+	If yes, we need to learn an \emph{embedding function}. 
+	If no, and we merely want to low dimensional representation of existing data, we only need to learn an embedding. 
+	
+\end{description}
 
 
 
