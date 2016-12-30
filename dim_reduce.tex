@@ -607,14 +607,17 @@ Typical stress functions include:
 
 
 
-
-\subsection{Force Embedding}
-
-
-
-
 \subsection{Local MDS}
 \label{sec:localMDS}
+
+\begin{example}[Non-Euclidean surface]
+	Consider data of coordinates on the globe. 
+	At short distances, constructing a dissimilarity graph with Euclidean distances will capture the true distance between points. 
+	At long distances, however, the Euclidean distances as grossly inappropriate. 
+	A more extreme example is coordinates on the brain's cerebral cortex.
+	Being a highly folded surface, the Euclidean distance between points is far from the true geodesic distances along the cortex's surface\footnote{Then again, it is possible that the true distances are the white matter fibers connecting going within the cortex, in which case, Euclidean distances are more appropriate than geodesic distances. We put that aside for now.}.
+\end{example}
+
 Local MDS is motivated by the observation that if the data does not lay in a globally convex subspace, then global distances are a very distorted measure, whereas geodesic distances should be used instead. 
 Their solution is to compute $\dissimilaritys$ using only local distances, and then calling upon MDS.
 
