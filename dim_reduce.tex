@@ -66,9 +66,12 @@
 
 \begin{tcolorbox}
 \begin{description}
+	
+	\item[Variable] \Aka \emph{dimension}, or \emph{feature} in the machine learning literature, or \emph{column} for reasons that will be obvious in the next item. 
+	
 	\item[Data] \Aka \emph{sample}, \emph{observations}, depending on your community. 
-	Will typically consist of $n$, $p$ dimensional vectors.
-	We typically denote the data as an $n\times p$ matrix $X$. 
+	Will typically consist of $n$, $p$ dimensional vectors, i.e., with $p$ variables in each.
+	We typically denote the data as a $n\times p$ matrix $X$. 
 	
 	\item[Manifold] A space which is regular enough so that it is \emph{locally} has all the properties of a linear space. 
 	We will denote an arbitrary manifold by $\manifold$.
@@ -161,10 +164,11 @@ See example in Figure~\ref{fig:usaarrests}.
 
 
 
-\subsubsection{Mathematics of PCA}
+\subsection{Mathematics of PCA}
 \label{sec:pca_mathematics}
 We now present the derivation of PCA from the two different motivations.
 
+\subsubsection{Variance Maximizing View of PCA}
 
 \begin{proof}
 	The sketch of the proof is the following:
@@ -179,76 +183,73 @@ We now present the derivation of PCA from the two different motivations.
 	It is most convenient, mathematically, to constrain the $l_2$ norm: $\normII{v}^2=1$.
 	Maximizing under a constraint, using Lagrange-Multipliers: 
 	\begin{align}
-	\argmax{v}{v \Sigma v' - \lambda (\normII{v}^2-1)}.
+	\argmax{v}{v' \Sigma v - \lambda (\normII{v}^2-1)}.
 	\end{align}
 	Differentiating w.r.t $v$ and equating zero: 
 	\begin{align}
 	(\Sigma- \lambda I) v = 0
 	\end{align}
-	So the $P$ solutions for $v$ are the eigen-vectors of $\Sigma$. Which of them to pick? 
+	We thus see that any of the $p$ eigenvalue-eigenvector pairs of $\Sigma$ is a local extremum. 
+	Which of them to pick?
 	To find a \emph{global} maximum we return to the original problem, as plug our result:
 	\begin{align}
 	\label{eq:pca_maximal_variance}
-	\argmax{v:\normII{v}^2=1}{v \Sigma v' }=\argmax{\lambda}{v \lambda v' }
+	\argmax{v:\normII{v}^2=1}{v' \Sigma v }=\argmax{\lambda}{v' \lambda v }
 	\end{align}
 	so that the global maximum is obtained with the largest eigen-value $\lambda$.
-	
-	Readers familiar with matrix norms will recognize that this is simply the derivation of the operator norm of $\Sigma$.
+	Put differently, the weight vector that returns the score that best separates individuals, is the eigenvector of $\Sigma$ with the largest eigenvalue. 
 	
 	The second principal component can be found by solving the same problem, with the additional constraint of $v_2$ orthogonal to $v_1$.
 	
-	The last missing ingredient is that instead of the true covariance between the features, $\Sigma$, we use the (scaled) empirical covariance $X'X$.
+	The last missing ingredient is that instead of the true covariance between the features, $\Sigma$, we use the (centered) empirical covariance $X'X$.
 \end{proof}
 
 
+\begin{remark}
+Readers familiar with matrix norms will recognize that the above is exactly the derivation of the spectral norm of $\Sigma$.
+\end{remark}
 
-\paragraph{The Linear-Space Embedding View}
-We now seek to find a sequence of $p$ approximations to $X$ that lay in $1,\dots,p$ dimensional linear subspaces, with respect to a least squares loss. For simplicity of exposition, we will assume that $X$ has been mean centred. 
-The $\rank$'th problem to solve is thus
-\begin{align}
-\label{eq:pca_erm}
-\argmin{\hyp_\rank}{\normF{X-\hyp_\rank(X)}}.
-\end{align}
-Since $\hyp_rank$ is a map from $\reals^p$ to some rank-$\rank$ linear subspace, it must have the form $\hyp_\rank(X)=\projectMat_\rank X$ where $\projectMat_\rank$ is a $n \times n$ matrix of rank $\rank$.
-Since Eq.(\ref{eq:pca_erm}) minimizes sums of (squared) Euclidean distances, $\projectMat_\rank$ has to be an orthogonal projection, thus symmetric. As such it can decomposed into an outer product $\projectMat_\rank=V_\rank V'_\rank$ where $V_\rank$ is full rank $n \times \rank$ matrix \citep[Eq.(5.13.4)]{meyer_matrix_2001}.
-Under the $\rank$-space constraint, and squared error, Eq.(\ref{eq:pca_erm}) collapses to 
-\begin{align}
-\label{eq:pca_erm2}
-\argmin{V_\rank}{\normF{X-V_\rank V'_\rank(X)}}.
-\end{align}
-Using some algebraic identities \cite[Eq.(23.3)]{shalev-shwartz_understanding_2014} Eq.(\ref{eq:pca_erm2}) is equivalent to 
-\begin{align}
-\label{eq:pca_erm3}
-\argmax{V_\rank}{\Tr(V'_\rank XX' V_\rank)}.		
-\end{align}
-At this point we should note that the linear-space embedding problem has collapsed to the variance maximization problem! 
-If you do not see this, just set $\rank=1$ and compare to Eq.(\ref{eq:pca_maximal_variance}), recalling that $X'X$ estimates the features' covariance $\Sigma$.
+
+
+\subsubsection{Linear-Space approximation View}
+
+In here, we try to find a series of $\manifold_q; q=1,\dots,p$, such that $\manifold_q$ is a \emph{linear} subspace of dimension $q$ which well approximates $X$ in some (matrix) norm. 
+For the deatils, see for instance \cite{shalev2014understanding}.
 
 
 
 
-
-
-
-
-\subsubsection{Intuition}
+\subsubsection{Why did Hotelling and Pearson arrive to the same solution?}
 \label{sec:pca_intuition}
 
-Notice we have currently offered two motivations for PCA: 
-(i) Find linear combinations that best distinguish between observations, i.e., maximize variance. 
-(ii) Find the linear subspace the bets approximates the data.
-The reason these two problems are equivalent, is due to the use of the squares error.
+We have currently offered two motivations for PCA: 
+(i) Find linear combinations $v_1,\dots,v_p$ that best distinguish between observations, i.e., maximize variance. 
+(ii) Find the linear subspaces $\manifold_1,\dots,\manifold_p$ that best approximates the data.
+The reason these two problems are equivalent, is due to the use of the squares-error/Euclidean norms.
+
 Informally speaking, the data has some total variance. 
-This variance can be decomposed into the part captured in $\manifold$, and the part not captured\footnote{Analogous to $SST=SSR+SSE$ in linear regression.}. 
-Since the variance in the data consists of sums of squares, minimizing the distance from $X$ to $\manifold$, is the same as maximizing the variance of $X \project \manifold$, since their sum is fixed.
+In analogy to the $SST=SSR+SSE$ decomposition in linear regression, the total variance of $X$ can be decomposed into the part in $\manifold_q$, and the part orthogonal. 
+The orthogonal part is the distance of $X$ from $\manifold_q$. 
+Maximizing the variance in $\manifold_q$ is thus the same as minimizing the distance from $X$ to $\manifold_q$. 
+
+The only unresolved matter- is why the solution to the variance maximization problem is a \emph{linear} subspace?
+This is simply because all the scores, are linear combinations of columns of $X$, thus span a linear subspace, as is sought in the linear-subspace approximation view. 
 
 
 
 
 
-\subsubsection{PCA as a Graph Method}
+
+\subsection{PCA as a Graph Method}
 \label{remark:pca_as_graph}
-Starting from the maximal variance motivation, it is perhaps not surprising that PCA depends only on the similarities between features, as measured by their empirical covariance. The linearity of the target manifold was there by assumption. 
+
+Notice the following equivalent facts: 
+(i) The solution to the PCA problem only depends on the covariance $\Sigma$. 
+(ii) $X$ is centered before computing the PCA. 
+This means that the PCA solution is invariant to the location of the data. 
+
+Starting from the maximal variance motivation, it is perhaps not surprising that PCA depends only on the similarities between features, as measured by their empirical covariance. 
+The linearity of the target manifold was there by assumption. 
 
 Following the linear-space embedding motivation, it is was surprising that the solutions depend only on the empirical covariances. This fact can be attributed to the use of squared error loss, which implied we were trying to decompose the total variance into the part in $\manifold_\rank$ and the orthogonal part.
 
