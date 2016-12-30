@@ -208,7 +208,7 @@ Readers familiar with matrix norms will recognize that the above is exactly the 
 
 
 
-\subsubsection{Linear-Space approximation View}
+\subsubsection{Linear-Space approximation view}
 
 In here, we try to find a series of $\manifold_q; q=1,\dots,p$, such that $\manifold_q$ is a \emph{linear} subspace of dimension $q$ which well approximates $X$ in some (matrix) norm. 
 For the deatils, see for instance \cite{shalev2014understanding}.
@@ -233,7 +233,7 @@ The only unresolved matter- is why the solution to the variance maximization pro
 This is simply because all the scores, are linear combinations of columns of $X$, thus span a linear subspace, as is sought in the linear-subspace approximation view. 
 
 
-\subsection{How many PCs can you find?}
+\subsection{How many PCs can you recover?}
 On the face of it, with $p$ variables you can find $p$ PCs. 
 Things are not that simple however.
 
@@ -241,7 +241,10 @@ In the population version of the problem, i.e., when $\Sigma$ is known, there ma
 Stating that $\Sigma$ is full rank, is stating that the variables of $\x$ are not fully correlated.
 
 In the empirical version of the problem, i.e., when $X'X$ is known, there may be as many non zero eigenvalues as the rank of $X'X$.
-Clearly, if $p>n$, variables of $X$ have to be linearly dependent, so that $X'X$ cannot be of full rank.
+Clearly, if $p>n$, variables of $X$ have to be linearly dependent, so that $X'X$ cannot possibly be of full rank.
+To say that the kernel of $X$ is of rank $p-n>0$, is to say that there are $p-n$ scores that are identically zero, thus have no variance. 
+
+
 Problems do not end when $p<n$. 
 This is because if $p<n$ but $p\sim n$ then we do not have many observations per estimated parameter. 
 In the statistical literature, this is known as a \emph{high dimensional} problem. 
@@ -256,69 +259,16 @@ For a rigorous treatment of the statistical properties of PCA, see \cite{nadler2
 \subsection{PCA as a Graph Method}
 \label{remark:pca_as_graph}
 
-We will now show that we may find the sequence of best approximating linear subspaces, without the actual measurements, but only with a similarity graph. 
-In particular, with the $n\times n$ graph $\dissimilaritys$ of distances between the samples. 
+It turns out that we may find the sequence of best approximating linear subspaces, i.e., the PCs, without the actual measurements $X$, but only with a dissimilarity graph. 
+In particular, with the $n\times n$ graph $\dissimilaritys$ of Euclidean distances between individuals: $\dissimilaritys_{i,j}:= \normII{x_i-x_j}$. 
+
 It should come of no surprise that we done need the actual measurements, $X$, since the optimal loadings, $v$, only depend on the covariance $\Sigma$, or its empirical counterpart, $X'X$. 
+It may, however, be quite surprising that given the distances between individuals, we may not recover the covariance between variables, $X'X$, but we can recover the PCs. 
+Put differently, to find the low dimensional $\manifold$ that approximates the data, we don't need the whole data, but rather, only the graph of distances between data points. 
 
-This means that the PCA solution is invariant to the \emph{location} of the data. 
-Put differently, the values of $X$ are of no importance given $X'X$, which can be informally thought of as a sufficient statistic\footnote{It is not a proper sufficient statistic as no generative model has been assumed.}.  
+For proof of the above statement, we refer the reader to \cite[Sec.18.5.2]{friedman2001elements}
 
-For centered $X$, $X'X$ estimates the covariance between variables. 
- ($\similaritys=XX'$), or on the Euclidean distances between individuals ($\dissimilaritys=(\norm{x_i-x_j})$).
-
-The building blocks of all these graph-based dimensionality reduction methods are:
-\begin{enumerate}
-	\item Compute some similarity graph $\similaritys$ (or dissimilarity graph $\dissimilaritys$) from the raw features.
-	\item Call upon graph embedding theory to map the data points into the target manifold $\manifold$.
-\end{enumerate}
-The fact that the linear-space embedding of the data depends only some similarity graph has laid a bridge between feature embedding, such as PCA, and \emph{graph embedding} methods such as MDS (\S\ref{sec:mds}).
-Moreover, it has opened the door for replacing the covariance similarity, with many other similarity measures. 
-Classic MDS (\S\ref{sec:mds}) is simply PCA when starting from $\similaritys$, thus viewed as a graph embedding problem.
-kPCA (\S\ref{sec:kpca}) plugs kernel similarities (\S\ref{apx:rkhs}) instead of covariance similarities. 
-Isomap (\S\ref{sec:isomap}), LocalMDS (\S\ref{sec:localMDS}), and LLE (\S\ref{sec:lle}) follow a similar motivation using \emph{local} measures of similarity.
-Spectral Clustering (\S\ref{sec:spectral_clustering}) does some linear-space embedding \`a-la PCA, then wrapping up with a clustering algorithm in $\manifold$ \`a-la K-means. 
-
-
-
-We now prove that the PCA solution can be cast in terms of the covariance between individuals ($\similaritys=XX'$) or the Euclidean distances ($\dissimilaritys=\norm{x_i-x_j}$).
-In particular, we show that all the information on the location (mean) of $X$, needed for the PCA reconstruction, is actually encoded in $\similaritys$ (or $\dissimilaritys$).
-
-The following exposition takes from \cite[Section 18.5.2]{hastie_elements_2003}
-
-
-\paragraph{PCA with the Covariance Similarity Graph}
-To begin, we need to cast the solution to the PCA problem in Eq.(\ref{eq:pca_erm3}) using the Singular Value Decomposition (SVD).\marginnote{SVD}
-
-\begin{definition}[SVD]
-	Any $n \times p$ matrix $X$, can be decomposed into $X=UDV'$ where 
-	$U$ is an $n \times p$ orthogonal matrix ($U'U=I_p$); 
-	$D$ is a $p \times p$ diagonal matrix with diagonal elements $d_1 \geq d_2 \geq \dots \geq d_p$;
-	$V$ is a $p \times p$ orthogonal matrix ($V'V=I_p$).
-\end{definition}
-
-For mean centered $X$, the series of embeddings $\hyp_\rank(X)$ for $\rank=1,\dots,\pagebreak$ resulting from Eq.(\ref{eq:pca_erm3}) is given by $\hyp_\rank(X)=U_\rank D_\rank$, where $U_\rank$ $D_\rank$ are the $\rank$ leading columns of $U$ and $D$ respectively. $UD$ is thus the sequence of all solutions.
-
-Now denoting $\similaritys=XX'$ and calling SVD: $\similaritys=U D^2 U'$. 
-We thus see that by decomposing $\similaritys$ we can recover $U$, $D$, and thus $\hyp_\rank(X)$.
-
-If $X$ is not mean centred, the relation still holds, but we skip the presentation.
-
-
-\paragraph{PCA with the Euclidean Distance Dissimilarity Graph}
-Can we convert Euclidean distances to empirical covariances? Yes!
-
-Denote the matrix of distances of a non-centred $X$: $\dissimilaritys^2=(\norm{x_i-x_j}^2)$.
-\begin{align}
-\dissimilaritys^2_{i,j} =& \norm{x_i-x_j}^2 \\
-=& \normII{x_i-\bar{x}}+\normII{x_j-\bar{x}}-2 \scalar{x_i-\bar{x}}{x_j-\bar{x}} \\
-=& \normII{x_i-\bar{x}}+\normII{x_j-\bar{x}}-2 \similaritys_{i,j}
-\end{align}
-where $\similaritys_{i,j}$ is the empirical covariance between individual $i$ and $j$.
-We thus have 
-\begin{align}
-\similaritys= - (I-M) \frac{\dissimilaritys^2}{2} (I-M)
-\end{align}
-where $M$ is the centring matrix: $M:= \frac{1}{n} \ones \ones'$, and $\ones$ an $n$ vector of $1$'s.
+This observation will later be very useful for other dimensionality reduction algorithms, which operate not on the original data points, but rather, on dissimilarity graphs. 
 
 
 
@@ -326,12 +276,14 @@ where $M$ is the centring matrix: $M:= \frac{1}{n} \ones \ones'$, and $\ones$ an
 
 
 
-\section{FA}
+
+
+\section{Factor Analysis (FA)}
 
 
 
 
-\section{ICA}
+\section{Independent Component Analysis (ICA)}
 
 
 
