@@ -191,7 +191,12 @@ Readers familiar with matrix norms will recognize that the above is exactly the 
 \subsubsection{Linear-Space approximation view}
 
 In here, we try to find a series of $\manifold_q; q=1,\dots,p$, such that $\manifold_q$ is a \emph{linear} subspace of dimension $q$ which well approximates $X$ in some (matrix) norm. 
-For the deatils, see for instance \cite{shalev2014understanding}.
+The problem to solve is 
+\begin{align}
+\label{eq:pca-dim-reduce}
+	\argmin{A\in \reals^{q \times p}, S\in \reals^{q \times n}}{\normF{X- S'A}}
+\end{align}
+and $\manifold_q$ is the span of $S$.
 
 
 
@@ -214,6 +219,7 @@ This is simply because all the scores, are linear combinations of columns of $X$
 
 
 \subsection{How many PCs can you recover?}
+\label{sec:how-many-pcs}
 On the face of it, with $p$ variables you can find $p$ PCs. 
 Things are not that simple however.
 
@@ -249,6 +255,19 @@ Put differently, to find the low dimensional $\manifold$ that approximates the d
 For proof of the above statement, we refer the reader to \cite[Sec.18.5.2]{friedman2001elements}
 
 This observation will later be very useful for other dimensionality reduction algorithms, which operate not on the original data points, but rather, on dissimilarity graphs. 
+
+
+
+
+
+
+\subsection{PCA as Supervised Linear Regression}
+As previously suggested, there is a strong link between dimensionality reduction and supervised learning (Sec~\ref{sec:dim-reduce-and-supervised}).
+The supervised learning view of PCA, is to learn a sequence of $1,\dots,p$ dimensional linear models, with which the $X$ matrix is a good prediction of.... the $X$ matrix. 
+
+
+
+
 
 
 
@@ -337,6 +356,21 @@ The reader is thus advised to try and place each approach along the following di
 \end{remark}
 
 
+\subsection{Dimensionality Reduction and Supervised Learning}
+\label{sec:dim-reduce-and-supervised}
+
+In the machine learning literature, dimensionality reduction belongs in the \emph{unsupervised} type of learning. 
+Indeed, no class labels are required to reduce dimension.
+The problem, however, are not unrelated. 
+Indeed, we may think of dimensionality reduction as a supervised learning problem where each variable is predicted by all the others. 
+If the predictive model is the same as we cycle along the $p$ possible response variables, and if this predictive model is low dimensional, we have effectively reduced the dimension of the data. 
+
+
+
+
+
+
+
 
 \section{Latent Variable Generative Approaches}
 All generative approaches to dimensionality reduction will specify some unobserved set of variables, which we can observe indirectly up to some measurement noise. 
@@ -346,7 +380,8 @@ We start with the simplest case of linear Factor Analysis.
 
 \subsection{Factor Analysis (FA)}
 
-To fix ideas, we start by revisiting the IQ problem in Example~\ref{ex:iq}:
+FA originates from the psychometric literature. 
+We thus revisit the IQ (actually g-factor) Example~\ref{ex:iq}:
 \begin{example}[g-factor\footnote{\url{https://en.wikipedia.org/wiki/G_factor_(psychometrics)}}]
 	
 	Assume $n$ respondents answer $p$ quantitative questions: $x_i \in \reals^p, i=1,\dots,n$. 
@@ -356,19 +391,20 @@ To fix ideas, we start by revisiting the IQ problem in Example~\ref{ex:iq}:
 	\begin{align}
 	x_i = A s_i + \varepsilon_i
 	\end{align}
-	And in matrix notation:
+And in matrix notation, for $q<p$ latent attributes:
 	\begin{align}
 	\label{eq:factor}
-	X = A \latent +\varepsilon
+	X = \latentn' \loadings  +\varepsilon,
 	\end{align}
-	The problem is to recover the unobservable intelligence scores, $s_1,\dots,s_n$, from the observed answers $X$.	
+where $\loadings$ is the $q \times p$ matrix of factor loadings, and $\latentn$ the $q \times n$ matrix of latent personality traits. 
+In our particular example where $q=1$, the problem is to recover the unobservable intelligence scores, $s_1,\dots,s_n$, from the observed answers $X$.	
 \end{example}
 
 
-Assuming a generative distribution on $\latent$ and $\varepsilon$, we may try to estimate $\loadings \latent$ by assuming some distribution on $\latent$ and $\varepsilon$ and apply maximum likelihood.
-Under standard assumptions on the distribution of $\latent$ and $\varepsilon$, recovering  $\latent$ from $\estim{\loadings\latent}$ is still impossible as there are infinitely many such solutions.
+Assuming a generative distribution on $\latentn$ and $\varepsilon$, we may try to estimate $\loadings \latentn$ by assuming some distribution on $\latentn$ and $\varepsilon$ and apply maximum likelihood.
+Under standard assumptions on the distribution of $\latentn$ and $\varepsilon$, recovering  $\latentn$ from $\estim{\loadings\latentn}$ is still impossible as there are infinitely many such solutions.
 In the statistical parlance we say the problem is \emph{non identifiable}, and in the applied mathematics parlance we say the problem is \emph{ill posed}.
-To see this, consider an orthogonal \emph{rotation} matrix $\rotation$ ($\rotation' \rotation=I$). For each such $\rotation$: $ \loadings \latent=\loadings \rotation' \rotation \latent = \loadings^* \latent^*$.
+To see this, consider an orthogonal \emph{rotation} matrix $\rotation$ ($\rotation' \rotation=I$). For each such $\rotation$: $ \loadings \latentn=\loadings \rotation' \rotation \latentn = \loadings^* \latentn^*$.
 While mathematically equivalent, $\loadings$ and $\loadings^*$ may have very different interpretations. 
 This is why many researchers find FA an unsatisfactory inference tool.
 
@@ -376,25 +412,25 @@ This is why many researchers find FA an unsatisfactory inference tool.
 \begin{remark}[Identifiability in PCA]
 	The non-uniqueness (non-identifiability) of the FA solution under variable rotation is never mentioned in the PCA context. Why is this?
 	This is because the methods solve different problems. 
-	The reason the solution to PCA is well defined is that PCA does not seek a single $\latent$ but rather a \emph{sequence} of $\latent$ with dimensions growing from $1$ to $n$. 
+	The reason the solution to PCA is well defined is that PCA does not seek a single $\latentn$ but rather a \emph{sequence} of $\latentn$ with dimensions growing from $1$ to $n$. 
 \end{remark}
 
 
 \begin{remark}[Linear and non-linear embeddings]
 	In classical FA in Eq.(\ref{eq:factor}) is clearly an embedding to a linear space. 
-	The one spanned by $\latent$. 
-	Under the classical probabilistic assumptions on $\latent$ and $\varepsilon$ the embedding itself is also linear, and is sometimes solved with PCA. 
+	The one spanned by $\latentn$. 
+	Under the classical probabilistic assumptions on $\latentn$ and $\varepsilon$ the embedding itself is also linear, and is sometimes solved with PCA. 
 	Being a generative model, there is no restriction for the embedding to be linear, and there certainly exists sets of assumptions for which the FA embedding is non linear. 
 \end{remark}
 
 \paragraph{FA Terminology}
 The FA terminology is slightly different than PCA:
 \begin{itemize}
-	\item \textbf{Factors}: The unobserved attributes $\latent$. 
+	\item \textbf{Factors}: The unobserved attributes $\latentn$. 
 	Not to be confused with the \emph{principal components} in the context of PCA.
 	\item \textbf{Loadings}: 
 	The $\loadings$ matrix; the contribution of each attribute to the observed $X$.
-	\item \textbf{Rotation}: An arbitrary orthogonal re-combination of the latent attributes $\latent$ and loadings, which changes the interpretation of the result.
+	\item \textbf{Rotation}: An arbitrary orthogonal re-combination of the latent attributes $\latentn$ and loadings, which changes the interpretation of the result.
 \end{itemize}
 
 
@@ -425,9 +461,9 @@ For an full exposition, and a discussion of the differences with PCA, see \cite{
 
 
 \subsection{Non Linear Factor Analysis}
-Classical FA deals with features, $X$, that are linear in the latent factors, $\latent$. 
+Classical FA deals with features, $X$, that are linear in the latent factors, $\latentn$. 
 Like any other generative model approach, it can be easily extended to deal with non-linear functions of the latent factors: $X=g(S)$, provided that $g(.)$ is one-to-one. 
-This problem is a non-linear embedding into a linear space (the one spanned by $\latent$).
+This problem is a non-linear embedding into a linear space (the one spanned by $\latentn$).
 
 
 
@@ -438,39 +474,39 @@ This problem is a non-linear embedding into a linear space (the one spanned by $
 
 
 ICA is a family of latent space models, thus, a \emph{meta-method}.
-It assumes data is generated as some function of the latent variables $\latent$. 
-In many cases this function is assumed to be linear in $\latent$ so that ICA is compared, if not confused, with PCA and even more so with FA. 
-In its most popular form, $X$ is assume to be a \emph{linear} function of the latent independent components: $X=\loadings \latent$.
+It assumes data is generated as some function of the latent variables $\latentn$. 
+In many cases this function is assumed to be linear in $\latentn$ so that ICA is compared, if not confused, with PCA and even more so with FA. 
+In its most popular form, $X$ is assume to be a \emph{linear} function of the latent independent components: $X=\loadings \latentn$.
 
-The fundamental idea of ICA is that $\latent$ has a joint distribution of \emph{non-Gaussian independent} variables. 
-This independence assumption, solves the the non-uniquness of $\latent$ in FA.
+The fundamental idea of ICA is that $\latentn$ has a joint distribution of \emph{non-Gaussian independent} variables. 
+This independence assumption, solves the the non-uniquness of $\latentn$ in FA.
 
-Being a generative model, estimation of $\latent$ can then be done using maximum likelihood, or other estimation principles. 
+Being a generative model, estimation of $\latentn$ can then be done using maximum likelihood, or other estimation principles. 
 A popular information theoretic estimation principle, replacing the maximum-likelihood principle, is known as \emph{infomax}.
 
-ICA is a popular technique in signal processing, where $\latent$ is actually the signal, such as sound in Example~\ref{ex:blind-signal}.
-Recovering $\latent$ is thus recovering the original signals mixing in the recorded $X$. 
+ICA is a popular technique in signal processing, where $\latentn$ is actually the signal, such as sound in Example~\ref{ex:blind-signal}.
+Recovering $\latentn$ is thus recovering the original signals mixing in the recorded $X$. 
 
 
 
 \begin{remark}[ICA and FA]
-	The solutions to the (linear) ICA problem can ultimately be seen as a solution to the FA problem with a particular rotation $\rotation$ implied by the probabilistic assumptions on $\latent$.
+	The solutions to the (linear) ICA problem can ultimately be seen as a solution to the FA problem with a particular rotation $\rotation$ implied by the probabilistic assumptions on $\latentn$.
 	Put differently, the formulation of the (linear) ICA problem, implies a unique rotation, which can be thought of as the rotation that returns components that are as far from Gaussian as possible. 
 \end{remark}
 
 
 \begin{remark}[Linear and non-linear embeddings]
 	In classical FA in Eq.(\ref{eq:factor}) is clearly an embedding to a linear space. 
-	The one spanned by $\latent$. 
-	Under the classical probabilistic assumptions on $\latent$ and $\varepsilon$ the embedding itself is also linear, and is sometimes solved with PCA. 
+	The one spanned by $\latentn$. 
+	Under the classical probabilistic assumptions on $\latentn$ and $\varepsilon$ the embedding itself is also linear, and is sometimes solved with PCA. 
 	Being a generative model, there is no restriction for the embedding to be linear, and there certainly exists sets of assumptions for which the FA embedding is non linear. 
 \end{remark}
 
 
 \begin{remark}[Linear and non-linear embeddings]
 	In classical ICA in Eq.(\ref{eq:factor}) is clearly an embedding to a linear space. 
-	The one spanned by $\latent$. 
-	The probabilistic assumptions on $\latent$ and $\varepsilon$ the embedding itself being non linear, thus solved as an optimization problem, and not via PCA. 
+	The one spanned by $\latentn$. 
+	The probabilistic assumptions on $\latentn$ and $\varepsilon$ the embedding itself being non linear, thus solved as an optimization problem, and not via PCA. 
 \end{remark}
 
 
@@ -481,9 +517,9 @@ For ease of presentation we present a simple setup, which can be considerably ge
 In this setup, we will first analyze the population problem, i.e., in terms of random variables. 
 We thus replace the data $X$, with the random vector $\x$, and afterwards consider implementation for finite samples. 
 \begin{itemize}
-	\item $\x=\loadings \latent$, implying that $\x$ is \emph{linear} in the latent components, and the latent space is of dimension $\rank=p$. It follows that $s=\loadings'X$.
+	\item $\x=\loadings \latentn$, implying that $\x$ is \emph{linear} in the latent components, and the latent space is of dimension $\rank=p$. It follows that $s=\loadings'X$.
 	\item $\x$ has been pre-whitented, so that $\cov{\x}=I$.
-	\item Distance between distributions are measured using the Kullback-Leibler divergence (KL): $\kl{\x}{\latent}$.
+	\item Distance between distributions are measured using the Kullback-Leibler divergence (KL): $\kl{\x}{\latentn}$.
 \end{itemize}
 
 The optimization problem in this simple ICA is to find an orthogonal matrix $\loadings$, for which:
@@ -709,7 +745,27 @@ The resulting approximating manifold $\manifold$, being the ``stitching'' of man
 
 \subsection{Auto Encoders}
 \label{sec:auto_encoders}
-[TODO. AKA auto-associator or Diabolo network]
+
+To present \emph{auto-encoders}, \aka \emph{auto-associator} or \emph{Diabolo network}, we restate the PCA space embedding formulation of Eq.(~\ref{eq:pca-dim-reduce}):
+\begin{align}
+	\argmin{A\in \reals^{q \times p}, S\in \reals^{q \times n}}{\normF{X- S'A}}
+\end{align}
+we may freely assume that $AA'=I$ so the problem reduces to
+\begin{align}
+	\argmin{A\in \reals^{q \times p}}{\normF{X- XA'A}}.
+\end{align}
+
+
+The single layer \emph{auto-encodres}, is the following:
+\begin{align}
+	\argmin{W\in \reals^{q\times p}}{\normF{X- g(XW')W}},
+\end{align}
+where $g$ is a known bijection from $\reals^q$ to $\reals^q$.
+Autoencoding is thus best understood as a \emph{neural network} used to predict $X$ from $X$ (see Sec~\ref{sec:dim-reduce-and-supervised}).
+
+
+
+
 
 
 
@@ -759,8 +815,49 @@ The resulting approximating manifold $\manifold$, being the ``stitching'' of man
 
 \section{Dealing with the high-dimension}
 
-\subsection{Sparse Principal Component Analysis}
+As we previously mentioned (Sec.\ref{sec:how-many-pcs}), it is hard to accurately estimates directions of co-variability with little data. 
+For some intuition, think of recovering a ``bigness score'' (Example~\ref{ex:bmi}) from only 3 individuals ($p=2,n=3$). 
+Would you trust the recovered index?
+
+In high dimensional problems, \aka low signal-to-noise regimes, we will introduce some regularization, to reduce variance, as the cost of some bias. 
+For generative models, regularization can always be introduced with Bayesian priors, say, some matrix-valued distribution as a prior on $\loadings$. 
+For purely algorithmic approaches (such as PCA), regularization has to be be hard-wired into the algorithm.
+
+
+
+\subsection{Simplified Component Technique LASSO (SCoTLASS)}
+
+SCoTLASS can be thought of as PCA, where sparse $\loadings$ are preferred as solutions.
+By ``sparse'' we mean that $\loadings$ has many zero entries. 
+We favor sparse solutions both to deal with the very low SNR of high dimensional problems, but also for better interpretation.
+
+\begin{think}
+	Why is it easier to interpret the PCs when $\loadings$ has many zero entries?
+\end{think}
+
+The mathematics of SCoTLASS looks like the variance maximization formulation of PCA with an equality and an inequality constraint.
+\begin{align}
+\label{eq:scotlass}
+	\argmax{v}{v'(X'X)v  + \lambda \normI{v} \text{ such that } \normII{v}=1 }
+\end{align}
+Sadly, Eq.(\ref{eq:scotlass}) is hard to solve numerically.
+
+
+\subsection{Sparse Principal Component Analysis (sPCA)}
 \label{sec:sPCA}
+
+Starting from the linear-space approximation view of PCA (not variance maximization), and with the numerical difficulties of SCoTLASS, we define the sPCA problem:
+\begin{align}
+\label{eq:spca}
+	\argmin{v,\theta}{\normF{X-\Theta V X} + \lambda_2 \normII{V} + \lambda_1 \normI{V} \text{ such that } \normII{\Theta}=1},
+\end{align}
+where $V$ is the matrix of all loadings, $\normF{.}$ the Frobenius matrix-norm, $\normII{.}$ the $l_2$ matrix-norm, and $\normI{.}$ the $l_1$ matrix-norm.
+
+sPCA can be seen as the SCoTLASS problem, where $\normII{V}=1$ is relaxed to $ \normII{V}\leq t$ for ease of computation.
+It can also be seen as a particular type of rotation, since just like the FA problem, when $p>n$ then PCA is also non-identifiable. 
+
+
+
 
 
 
