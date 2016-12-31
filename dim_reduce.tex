@@ -478,16 +478,15 @@ It can also be seen as the generative counterpart of kPCA (Sec.\ref{sec:kpca}) o
 ICA is a family of latent space models, thus, a \emph{meta-method}.
 It assumes data is generated as some function of the latent variables $\latentn$. 
 In many cases this function is assumed to be linear in $\latentn$ so that ICA is compared, if not confused, with PCA and even more so with FA. 
-In its most popular form, $X$ is assume to be a \emph{linear} function of the latent independent components: $X=\latentn \loadings $.
+In its most popular form, $X$ is assumed to be a \emph{linear} function of the latent independent components: $X=\latentn \loadings $.
 
 The fundamental idea of ICA is that $\latentn$ has a joint distribution of \emph{non-Gaussian independent} variables. 
 This independence assumption, solves the the non-uniquness of $\latentn$ in FA.
 
 Being a generative model, estimation of $\latentn$ can then be done using maximum likelihood, or other estimation principles. 
-A popular information theoretic estimation principle, replacing the maximum-likelihood principle, is known as \emph{infomax}.
 
-ICA is a popular technique in signal processing, where $\latentn$ is actually the signal, such as sound in Example~\ref{ex:blind-signal}.
-Recovering $\latentn$ is thus recovering the original signals mixing in the recorded $X$. 
+ICA is a popular technique in signal processing, where $\loadings$ is actually the signal, such as sound in Example~\ref{ex:blind-signal}.
+Recovering $\loadings$ is thus recovering the original signals mixing in the recorded $X$. 
 
 
 
@@ -577,25 +576,13 @@ This does not mean that they cannot be cast via their generative model, but rath
 \subsection{Multidimensional Scaling (MDS)}
 \label{sec:mds}
 
-Very roughly speaking, MDS can be thought of as a variation on PCA, that begins with a distance graph\footnote{The term Graph is typically used in this context instead of Network. But a graph allows only yes/no relations, while a network, which is a weighted graph, allows a continuous measure of similarity (or dissimilarity). It is thus more appropriate.} $\dissimilaritys$, and embeds into a two-dimensional space.
-We have already seen in Section~\ref{sec:pca_as_graph} that PCA really only needs a similarity graph. 
-The embedding into two dimensions is motivated by that fact that MDS is typically used for visualization. 
+Very roughly speaking, MDS can be thought of as a variation on PCA, that (i) begins with a distance graph\footnote{The term Graph is typically used in this context instead of Network. But a graph allows only yes/no relations, while a network, which is a weighted graph, allows a continuous measure of similarity (or dissimilarity). It is thus more appropriate.} $\dissimilaritys$, and (ii) embeds into a two-dimensional space.
+Regarding (i), we have already seen in Section~\ref{sec:pca_as_graph} that PCA really only needs a similarity graph, and not the whole $X$.  
+Regarding (ii), the embedding into two dimensions is motivated by that fact that MDS is typically used for visualization. 
 
 MDS aims at embedding a graph of distances, while preserving the original distances.
 Basic results in graph/network theory \citep[e.g.][]{graham1988isometric} suggest that the geometry of a graph cannot be preserved when embedding it into lower dimensions. 
 The different types of MDSs, such as \emph{Classical MDS}, and \emph{Sammon Mappings}, differ in the \emph{stress function} penalizing for geometric distortion.
-
-\begin{remark}[MDS and PCA]
-	If the input of MDS is the Euclidean distances between points, then MDS with ``classical scaling'' (\aka Torgerson scaling) returns the exact same embedding as PCA with $2$ PCs.
-\end{remark}
-
-
-\begin{remark}[MDS and Graph Drawing]
-	If the purposes of lowering the dimension is visualization, then the dimension of $\manifold$ will typically be $2$. 
-	Embedding in $2$ dimensional linear spaces is of great interest for visualization, and indeed there is a whole field called \emph{Graph Drawing}\footnote{\url{https://en.wikipedia.org/wiki/Graph_drawing}}, which focuses on these problems.
-	For instance, the very popular \emph{force embedding}\footnote{\url{https://en.wikipedia.org/wiki/Force-directed_graph_drawing}} in the D3 java-script libraries stems from the Graph Drawing literature. 
-\end{remark}
-
 
 Sadly, MDS may scale poorly to large dissimilarity matrices, and the optimization may converge to a local minimum.
 Being a data embedding, and not an embedding function, when new data points are made available, the embedding will have to be re-learned.
@@ -639,10 +626,19 @@ Typical stress functions include:
 \end{description}
 
 
-\begin{remark}[Classical and Least Squares MDS]
-	Although they both minimize the squared distortion, working with similarities or dissimilarities lead to different solutions. 
-	In particular, Classical is a linear embedding into a linear space (it is identical to PCA) while Stress is a non-linear embedding into a linear space. 
+
+
+\begin{remark}[MDS and PCA]
+	If the input of MDS is the Euclidean distances between points, then MDS with ``classical scaling'' (\aka Torgerson scaling) returns the exact same embedding as PCA with $2$ PCs.
 \end{remark}
+
+
+\begin{remark}[MDS and Graph Drawing]
+	If the purposes of lowering the dimension is visualization, then the dimension of $\manifold$ will typically be $2$. 
+	Embedding in $2$ dimensional linear spaces is of great interest for visualization, and indeed there is a whole field called \emph{Graph Drawing}\footnote{\url{https://en.wikipedia.org/wiki/Graph_drawing}}, which focuses on these problems.
+	For instance, the very popular \emph{force embedding}\footnote{\url{https://en.wikipedia.org/wiki/Force-directed_graph_drawing}} in the D3 java-script libraries stems from the Graph Drawing literature. 
+\end{remark}
+
 
 
 
