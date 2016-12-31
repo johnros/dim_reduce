@@ -121,7 +121,7 @@ We now present the derivation of PCA from the two different motivations.
 
 \begin{proof}
 	The sketch of the proof is the following:
-	We will first show that the weight vector that maximizes the variance is the eigenvector that corresponds to the first principal component.
+	We will first show that the weight vector that maximizes the variance of the score is the eigenvector that corresponds to the first principal component.
 	We will do so for the \emph{population} covariance, $\Sigma$, and wrap up by plugging its empirical counterpart, $X'X$ (assuming a centered $X$). 
 		
 	Starting with the first principal component.
@@ -132,7 +132,8 @@ We now present the derivation of PCA from the two different motivations.
 	It is most convenient, mathematically, to constrain the $l_2$ norm: $\normII{v}^2=1$.
 	Maximizing under a constraint, using Lagrange-Multipliers: 
 	\begin{align}
-	\argmax{v}{v' \Sigma v - \lambda (\normII{v}^2-1)}.
+	\label{eq:pca-problem}
+		\argmax{v}{v' \Sigma v - \lambda (\normII{v}^2-1)}.
 	\end{align}
 	Differentiating w.r.t $v$ and equating zero: 
 	\begin{align}
@@ -140,7 +141,7 @@ We now present the derivation of PCA from the two different motivations.
 	\end{align}
 	We thus see that any of the $p$ eigenvalue-eigenvector pairs of $\Sigma$ is a local extremum. 
 	Which of them to pick?
-	To find a \emph{global} maximum we return to the original problem, as plug our result:
+	To find a \emph{global} maximum we return to the original problem, and use the fact that the only solutions to (\ref{eq:pca-problem}) are eingenvalue-eigenvector pairs:
 	\begin{align}
 	\label{eq:pca_maximal_variance}
 	\argmax{v:\normII{v}^2=1}{v' \Sigma v }=\argmax{\lambda}{v' \lambda v }
@@ -223,23 +224,24 @@ This is simply because all the scores, are linear combinations of columns of $X$
 
 
 
-\subsection{How many PCs can you recover?}
+\subsection{How many PCs can one recover?}
 \label{sec:how-many-pcs}
-On the face of it, with $p$ variables you can find $p$ PCs. 
+On the face of it, with $p$ variables one can find $p$ PCs. 
 Things are not that simple however.
 
-In the population version of the problem, i.e., when $\Sigma$ is known, there may be as many non zero eigenvalues as the rank of $\Sigma$. 
-Stating that $\Sigma$ is full rank, is stating that the variables of $\x$ are not fully correlated.
+In the population version of the problem, i.e., when $\Sigma$, and not $X'X$ is known, the number of non-trivial components is the number of ``independent information pieces'' in $\x$. 
+It will trivially be $p$ unless entries in $\x$ are fully multicollinear. 
+Stating that $\Sigma$ has full rank, is thus identical to stating that the variables of $\x$ are not fully correlated, and thus, that $p$ PCs can be recovered. 
 
-In the empirical version of the problem, i.e., when $X'X$ is known, there may be as many non zero eigenvalues as the rank of $X'X$.
+In the empirical version of the problem, i.e., when $X'X$, and not $\Sigma$ is known, things further complicate.
+First, for purely algebraic reasons, there may be as many non zero eigenvalues as the rank of $X'X$.
 Clearly, if $p>n$, variables of $X$ have to be linearly dependent, so that $X'X$ cannot possibly be of full rank.
-To say that the kernel of $X$ is of rank $p-n>0$, is to say that there are $p-n$ scores that are identically zero, thus have no variance. 
+Put differently, the number of PCs that may be computed is the same as the dimension of the eigenspace of $X$. 
 
-
-Problems do not end when $p<n$. 
+While the algebraic problem ends when $p<n$, the statistical one only begins, and ends if $n \gg p$. 
 This is because if $p<n$ but $p\sim n$ then we do not have many observations per estimated parameter. 
-In the statistical literature, this is known as a \emph{high dimensional} problem. 
-In the engineering parlance, we say we have low \emph{signal to noise}.
+In the statistical literature, this is known as a \emph{high-dimensional} problem. 
+In the engineering parlance, we say we have low \emph{signal-to-noise}.
 For a rigorous treatment of the statistical properties of PCA, see \cite{nadler2008finite}.
  
 
