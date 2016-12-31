@@ -693,7 +693,7 @@ If we choose the right $g$'s, the solution of Eq.(\ref{eq:kpca_wrong}) may take 
 The classes of such $g$'s are known as Reproducing Kernel Hilbert Spaces (RKHS). 
 At an intuitive level, RKHS's are subspaces of ``the space of all functions'', which:
 (i) Are defined via a \emph{kernel function} we need to specify. Each kernel defines a different subspace. 
-(ii) They have a very particular structure so that finding $g$ has a complexity polynomial in the number of observations, $n$. 
+(ii) They have a very particular structure so that the optimal $g$ is not linear in $X$, but is indeed linear in some simple and known transformation of $X$-- the kernel. 
 
 kPCA is an embedding into a non-linear manifold.
 The embedding itself is non-linear in the original data, $X$, but the whole point of the method is that the embedding is linear in a known function of the data-- the kernel function.
@@ -776,7 +776,7 @@ The single layer \emph{auto-encodres}, is the following:
 	\argmin{W\in \reals^{q\times p}}{\normF{X- g(XW')W}},
 \end{align}
 where $g$ is a known bijection from $\reals^q$ to $\reals^q$.
-Autoencoding is thus best understood as a \emph{neural network} used to predict $X$ from $X$ (see Sec~\ref{sec:dim-reduce-and-supervised}).
+Autoencoding is thus best understood as a \emph{neural network} used to predict $X$ from $X$ (see Sec~\ref{sec:dim-reduce-and-supervised}), or as a purely-algorithmic counterpart fo non-linear FA.
 
 
 
