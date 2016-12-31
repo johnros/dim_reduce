@@ -99,7 +99,7 @@ Return to the BMI problem in Exampl~\ref{ex:bmi}.
 Assume you now wish to give each individual a ``size score'', that is a \textbf{linear} combination of height and weight: PCA does just that. 
 It returns the linear combination that has the largest variability, i.e., the combination which best distinguishes between individuals. 
 
-The variance maximizing motivation above was the one that guided Hotelling \citet{hotelling1933analysis}.
+The variance maximizing motivation above was the one that guided \citet{hotelling1933analysis}.
 But $30$ years before him, \citet{pearson1901liii} derived the same procedure with a different motivation in mind. 
 Pearson was also trying to give each individual a score. 
 He did not care about variance maximization, however. 
@@ -110,37 +110,6 @@ Pearson and Hotelling (among others) thus arrived to the exact same solution, wi
 
 
 
-
-
-
-\subsubsection{Bi Plot}
-\label{sec:bi_plot}
-The \emph{Bi-Plot} shows the two first scores of the original data points.
-These scores are known as the \emph{Principal Componets} (PCs). \marginnote{Principal Components}
-The contribution of each original variable to each PC, is called the \emph{Loadings}.
-The plot also shows the contribution of each of the original variables to each of the scores. 
-See example in Figure~\ref{fig:usaarrests}.
-
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=0.7\linewidth]{USAarrests}
-	\caption{\textbf{BiPlot}.
-		Arrest type data for USA states. 
-		Data includes urban population size, number of rape related arrests, assault related, and murder related ($p=4$). 
-		Each city is presented against its two first PCs. 
-		Arrows encode the loadings. 
-		They show that PC1 encodes a general crime level, as it is the average of all type of crimes. 
-		PC2 measures the level of urbanization, as it is dominated by the UrbanPopulation variable. 		
-		\\ Source: \url{https://goo.gl/85qtKv}}
-	\label{fig:usaarrests}
-\end{figure}
-
-
-
-\subsubsection{Scree Plot}
-\label{sec:scree_plot}
-[TODO]
 
 
 
@@ -193,13 +162,44 @@ Readers familiar with matrix norms will recognize that the above is exactly the 
 
 \subsubsection{Linear-Space approximation view}
 
-In here, we try to find a series of $\manifold_q; q=1,\dots,p$, such that $\manifold_q$ is a \emph{linear} subspace of dimension $q$ which well approximates $X$ in some (matrix) norm. 
+In here, we try to find a series of $\manifold_q; q=1,\dots,p$, such that $\manifold_q$ is a \emph{linear} subspace of dimension $q$ which well approximates $X$ in the Frobenius norm. 
 The problem to solve is 
 \begin{align}
 \label{eq:pca-dim-reduce}
 	\argmin{A\in \reals^{q \times p}, S\in \reals^{q \times n}}{\normF{X- S'A}}
 \end{align}
 and $\manifold_q$ is the span of $S$.
+
+
+
+\subsubsection{Bi Plot}
+\label{sec:bi_plot}
+The \emph{Bi-Plot} shows the two first scores of the original data points.
+These scores are known as the \emph{Principal Componets} (PCs). \marginnote{Principal Components}
+The contribution of each original variable to each PC, is called the \emph{Loadings}.
+The plot also shows the contribution of each of the original variables to each of the scores. 
+See example in Figure~\ref{fig:usaarrests}.
+
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.7\linewidth]{USAarrests}
+	\caption{\textbf{BiPlot}.
+		Arrest type data for USA states. 
+		Data includes urban population size, number of rape related arrests, assault related, and murder related ($p=4$). 
+		Each city is presented against its two first PCs. 
+		Arrows encode the loadings. 
+		They show that PC1 encodes a general crime level, as it is the average of all type of crimes. 
+		PC2 measures the level of urbanization, as it is dominated by the UrbanPopulation variable. 		
+		\\ Source: \url{https://goo.gl/85qtKv}}
+	\label{fig:usaarrests}
+\end{figure}
+
+
+
+\subsubsection{Scree Plot}
+\label{sec:scree_plot}
+[TODO]
 
 
 
@@ -221,6 +221,8 @@ The only unresolved matter- is why the solution to the variance maximization pro
 This is simply because all the scores, are linear combinations of columns of $X$, thus span a linear subspace, as is sought in the linear-subspace approximation view. 
 
 
+
+
 \subsection{How many PCs can you recover?}
 \label{sec:how-many-pcs}
 On the face of it, with $p$ variables you can find $p$ PCs. 
@@ -240,9 +242,6 @@ In the statistical literature, this is known as a \emph{high dimensional} proble
 In the engineering parlance, we say we have low \emph{signal to noise}.
 For a rigorous treatment of the statistical properties of PCA, see \cite{nadler2008finite}.
  
-
-
-
 
 
 \subsection{PCA as a Graph Method}
