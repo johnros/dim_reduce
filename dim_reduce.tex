@@ -253,10 +253,10 @@ It turns out that we may find the sequence of best approximating linear subspace
 In particular, with the $n\times n$ graph $\dissimilaritys$ of Euclidean distances between individuals: $\dissimilaritys_{i,j}:= \normII{x_i-x_j}$. 
 
 It should come of no surprise that we done need the actual measurements, $X$, since the optimal loadings, $v$, only depend on the covariance $\Sigma$, or its empirical counterpart, $X'X$. 
-It may, however, be quite surprising that given the distances between individuals, we may not recover the covariance between variables, $X'X$, but we can recover the PCs. 
+It may, however, be quite surprising that given only the distances between individuals, we may not recover the covariance between variables, $X'X$, but we can recover the PCs. 
 Put differently, to find the low dimensional $\manifold$ that approximates the data, we don't need the whole data, but rather, only the graph of distances between data points. 
 
-For proof of the above statement, we refer the reader to \cite[Sec.18.5.2]{friedman2001elements}
+For proof of the above statement, we refer the reader to \citet[Sec.18.5.2]{friedman2001elements}
 
 This observation will later be very useful for other dimensionality reduction algorithms, which operate not on the original data points, but rather, on dissimilarity graphs. 
 
@@ -266,8 +266,8 @@ This observation will later be very useful for other dimensionality reduction al
 
 
 \subsection{PCA as Supervised Linear Regression}
-As previously suggested, there is a strong link between dimensionality reduction and supervised learning (Sec~\ref{sec:dim-reduce-and-supervised}).
-The supervised learning view of PCA, is to learn a sequence of $1,\dots,p$ dimensional linear models, with which the $X$ matrix is a good prediction of.... the $X$ matrix. 
+There is a strong link between dimensionality reduction and supervised learning.
+The supervised learning view of PCA, is to learn a sequence of $1,\dots,p$ dimensional linear models, with which the $X$ matrix is a good prediction of \dots, well, the $X$ matrix. 
 
 
 
@@ -286,8 +286,8 @@ The supervised learning view of PCA, is to learn a sequence of $1,\dots,p$ dimen
 		
 		\item[Variable] \Aka \emph{dimension}, or \emph{feature} in the machine learning literature, or \emph{column} for reasons that will be obvious in the next item. 
 		
-		\item[Data] \Aka \emph{sample}, \emph{observations}, depending on your community. 
-		Will typically consist of $n$, $p$ dimensional vectors, i.e., with $p$ variables in each.
+		\item[Data] \Aka \emph{sample}, \emph{observations}. 
+		Will typically consist of $n$, $p$ dimensional vectors.
 		We typically denote the data as a $n\times p$ matrix $X$. 
 		
 		\item[Manifold] A space which is regular enough so that it is \emph{locally} has all the properties of a linear space. 
@@ -299,7 +299,7 @@ The supervised learning view of PCA, is to learn a sequence of $1,\dots,p$ dimen
 		\item[Linear Embedding] An embedding done via a linear operation (thus representable by a matrix). 
 		
 		\item[Generative Model] Known to statisticians as the \emph{sampling distribution}. 
-		The assumed stochastic process that generated the observed data. 
+		The assumed stochastic process that generated the observed $X$. 
 		
 	\end{description}
 \end{tcolorbox}
@@ -310,7 +310,7 @@ The supervised learning view of PCA, is to learn a sequence of $1,\dots,p$ dimen
 \subsection{Motivations}
 
 \begin{description}
-	\item [Scoring] Give each observation a score (Hotelling motivation).
+	\item [Scoring] Give each observation an interpretable, simple score (Hotelling's motivation).
 
 	\item [Latent structure] Recover unobservables from indirect measurements. 
 	E.g: Blind signal reconstruction, CT scan, cryo-electron microscopy, etc. 
@@ -328,9 +328,9 @@ The supervised learning view of PCA, is to learn a sequence of $1,\dots,p$ dimen
 
 
 \subsection{Properties of a dimensionality reduction approach}
-Here are some major dimensions that characterizes dimensionality reduction approaches. 
-We will try to state the characteristics of each approach as we proceed, but we are nowhere near exhaustive.
-The reader is thus advised to try and place each approach along the following dimensions:
+Here are some properties that characterize dimensionality reduction approaches. 
+We will not try to state all the properties of each approach.
+The reader is thus advised to try and characterize each approach along the following properties:
 \begin{description}
 	\item [Generative vs. algorithmic] Refers to the motivation of the approach. Is it stated as an algorithm, or stated via some generative probabilistic model. 
 	PCA is purely algorithmic. 
@@ -347,16 +347,17 @@ The reader is thus advised to try and place each approach along the following di
 	Will we need to apply the reduction to new data? 
 	If yes, we need to learn an \emph{embedding function}. 
 	If no, and we merely want to low dimensional representation of existing data, we only need to learn an embedding. 
+	PCA learning an embedding \emph{function}.
 	
 	\item [Euclidean vs. non-Euclidean] 
 	Many dimensionality reduction methods only need a dissimilarity (i.e. distance) graph to operate. 
-	The Euclidean norm is historically the most popular.
-	Some methods are agnostic to the norm used, while some, some have Euclid hard-wired into them, and some, hard-wire themselves with some other norm. 
+	The Euclidean distance is historically the most popular dissimilarity measure.
+	Some methods are agnostic to the norm used, some have Euclid hard-wired into them, and some, hard-wire themselves with some non-Euclidean norm. 
 \end{description}
 
 \begin{remark}[Non linear manifolds and non-linear embeddings]
-	The distinction we make between non-linear embeddings and non-linear manifolds is non-standard in the literature. 
-	The term \emph{non-linear space embedding} is used in both context. 
+	The distinction we make between non-linear \emph{embeddings} and non-linear manifolds is non-standard in the literature. 
+	The term \emph{non-linear space embedding} is used in both context, but typically only for the type of embedding, and not the target manifold.
 \end{remark}
 
 
@@ -398,17 +399,17 @@ We thus revisit the IQ (actually g-factor) Example~\ref{ex:iq}:
 And in matrix notation, for $q<p$ latent attributes:
 	\begin{align}
 	\label{eq:factor}
-	X = \latentn' \loadings  +\varepsilon,
+	X = \latentn \loadings  +\varepsilon,
 	\end{align}
 where $\loadings$ is the $q \times p$ matrix of factor loadings, and $\latentn$ the $q \times n$ matrix of latent personality traits. 
 In our particular example where $q=1$, the problem is to recover the unobservable intelligence scores, $s_1,\dots,s_n$, from the observed answers $X$.	
 \end{example}
 
 
-Assuming a generative distribution on $\latentn$ and $\varepsilon$, we may try to estimate $\loadings \latentn$ by assuming some distribution on $\latentn$ and $\varepsilon$ and apply maximum likelihood.
+Assuming a generative distribution on $\latentn$ and $\varepsilon$, we may try to estimate $\latentn \loadings $ by assuming some distribution on $\latentn$ and $\varepsilon$ and apply maximum likelihood.
 Under standard assumptions on the distribution of $\latentn$ and $\varepsilon$, recovering  $\latentn$ from $\estim{\loadings\latentn}$ is still impossible as there are infinitely many such solutions.
 In the statistical parlance we say the problem is \emph{non identifiable}, and in the applied mathematics parlance we say the problem is \emph{ill posed}.
-To see this, consider an orthogonal \emph{rotation} matrix $\rotation$ ($\rotation' \rotation=I$). For each such $\rotation$: $ \loadings \latentn=\loadings \rotation' \rotation \latentn = \loadings^* \latentn^*$.
+To see this, consider an orthogonal \emph{rotation} matrix $\rotation$ ($\rotation' \rotation=I$). For each such $\rotation$: $ \latentn \loadings = \latentn \rotation' \rotation \loadings = \latentn^* \loadings^* $.
 While mathematically equivalent, $\loadings$ and $\loadings^*$ may have very different interpretations. 
 This is why many researchers find FA an unsatisfactory inference tool.
 
@@ -465,7 +466,7 @@ These are known as \emph{rotations}:
 Classical FA deals with features, $X$, that are linear in the latent factors, $\latentn$. 
 Like any other generative model approach, it can be easily extended to deal with non-linear functions of the latent factors: $X=g(S)$, provided that $g(.)$ is one-to-one. 
 This problem is a non-linear embedding into a linear space (the one spanned by $\latentn$).
-
+It can also be seen as the generative counterpart of kPCA (Sec.\ref{sec:kpca}) or auto-encoders (Sec.\ref{sec:auto_encoders}).
 
 
 
@@ -477,7 +478,7 @@ This problem is a non-linear embedding into a linear space (the one spanned by $
 ICA is a family of latent space models, thus, a \emph{meta-method}.
 It assumes data is generated as some function of the latent variables $\latentn$. 
 In many cases this function is assumed to be linear in $\latentn$ so that ICA is compared, if not confused, with PCA and even more so with FA. 
-In its most popular form, $X$ is assume to be a \emph{linear} function of the latent independent components: $X=\loadings \latentn$.
+In its most popular form, $X$ is assume to be a \emph{linear} function of the latent independent components: $X=\latentn \loadings $.
 
 The fundamental idea of ICA is that $\latentn$ has a joint distribution of \emph{non-Gaussian independent} variables. 
 This independence assumption, solves the the non-uniquness of $\latentn$ in FA.
@@ -518,7 +519,7 @@ For ease of presentation we present a simple setup, which can be considerably ge
 In this setup, we will first analyze the population problem, i.e., in terms of random variables. 
 We thus replace the data $X$, with the random vector $\x$, and afterwards consider implementation for finite samples. 
 \begin{itemize}
-	\item $\x=\loadings \latentn$, implying that $\x$ is \emph{linear} in the latent components, and the latent space is of dimension $\rank=p$. It follows that $s=\loadings'X$.
+	\item $\x=\latentn \loadings $, implying that $\x$ is \emph{linear} in the latent components, and the latent space is of dimension $\rank=p$. It follows that $s=\loadings'X$.
 	\item $\x$ has been pre-whitented, so that $\cov{\x}=I$.
 	\item Distance between distributions are measured using the Kullback-Leibler divergence (KL): $\kl{\x}{\latentn}$.
 \end{itemize}
@@ -827,7 +828,7 @@ Autoencoding is thus best understood as a \emph{neural network} used to predict 
 \subsection{Bibliographic notes}
 To read more on almost anything, see \citet{friedman2001elements}.
 For a brief review of Factor Analysis see \cite{friedman2001elements}.
-For an full exposition, and a discussion of the differences with PCA, see \cite{jolliffe2002principal}.
+For a full exposition, and a discussion of the differences with PCA, see \cite{jolliffe2002principal}.
 
 For manifold learning see \citet{mohri2012foundations}.
 
