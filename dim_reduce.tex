@@ -47,7 +47,7 @@
 \end{example}
 
 
-\begin{example}[IQ]
+\begin{example}[g-factor]
 	\label{ex:iq}
 	Consider the correctness of the answers to a questionnaire with $p$ questions. 
 	The data may seemingly reside in a $p$ dimensional space, but assuming there is such a thing as ``skill'', then given the correctness of a person's reply to a subset of questions, we have a good idea how he scores on the rest. 
@@ -56,12 +56,15 @@
 \end{example}
 
 
+
 \begin{example}[Blind signal separation]
 	\label{ex:blind-signal}
 	Consider $n$ microphones recording an individual. 
 	The digitized recording consists of $p$ samples. 
 	Are the recordings really a shapeless cloud of $n$ points in $\reals^p$?
-	Since they all record the same sound, one would expect them to arrange around a single 
+	Since they all record the same sound, one would expect the $n$ $p$-dimensional points to arrange around the source sound bit: a point in $\reals^p$.
+	If microphones have different distances to the source, volumes may differ. 
+	We would thus expect the $n$ points to arrange about a line that ends at the source. 	
 \end{example}
 		
 	
@@ -455,9 +458,6 @@ These are known as \emph{rotations}:
 	A computationally efficient approximation of oblimin.
 \end{itemize}
 
-\subsubsection{Bibliographic Notes}
-For a brief review of Factor Analysis see \cite{friedman2001elements}.
-For an full exposition, and a discussion of the differences with PCA, see \cite{jolliffe2002principal}.
 
 
 \subsection{Non Linear Factor Analysis}
@@ -580,7 +580,7 @@ We have already seen in Section~\ref{sec:pca_as_graph} that PCA really only need
 The embedding into two dimensions is motivated by that fact that MDS is typically used for visualization. 
 
 MDS aims at embedding a graph of distances, while preserving the original distances.
-Basic results in graph/network theory suggest that the geometry of a graph cannot be preserved when embedding it into lower dimensions. 
+Basic results in graph/network theory \citep[e.g.][]{graham1988isometric} suggest that the geometry of a graph cannot be preserved when embedding it into lower dimensions. 
 The different types of MDSs, such as \emph{Classical MDS}, and \emph{Sammon Mappings}, differ in the \emph{stress function} penalizing for geometric distortion.
 
 \begin{remark}[MDS and PCA]
@@ -697,6 +697,15 @@ At an intuitive level, RKHS's are subspaces of ``the space of all functions'', w
 (i) Are defined via a \emph{kernel function} we need to specify. Each kernel defines a different subspace. 
 (ii) They have a very particular structure so that finding $g$ has a complexity polynomial in the number of observations, $n$. 
 
+kPCA is an embedding into a non-linear manifold.
+The embedding itself is non-linear in the original data, $X$, but the whole point of the method is that the embedding is linear in a known function of the data-- the kernel function.
+
+
+\begin{remark}[kPCA and Manifold learning]
+	kPCA is seen by some as the ``father'' of all manifold learning algorithms. 
+	Algorithms such as IsoMap, LLE, LaplacianEigenmaps, were motivated as generalizations of kPCA.
+\end{remark}
+
 
 
 \paragraph{Mathematics of kPCA}
@@ -715,8 +724,6 @@ In particular, the ``stitching'' between polygons is a very irregular structure 
 
 
 \subsection{Principal Curves and Surfaces}
-
-
 The algorithm iterates until it returns a curve of a surface.
 In the curve case, it will return a curve with the \emph{self consistency} property. 
 I.e., a curve with a path that is the average of all it's closest data points.\marginnote{Self Consisntecy}
@@ -739,6 +746,16 @@ LLE is similar in spirit to Isomap and LocalMDS.
 It differs, however, in the way similarities are computed, and in the way embeddings are performed. 
 Unlike localMDS, which computes local distances and ends with a \emph{global embedding}, LLE computes local distances and performs \emph{local linear embeddings}.
 The resulting approximating manifold $\manifold$, being the ``stitching'' of many linear spaces, is ultimately non linear.
+
+
+
+\subsection{Laplacian Eigenmaps}
+Just like LLE, Laplacian Eigenmaps is an algorithm to measure distances and embed local neighborhoods of the original $X$ space.
+
+
+\subsection{Maximum Variance Unfolding}
+Just like LLE.
+
 
 
 
@@ -806,6 +823,13 @@ Autoencoding is thus best understood as a \emph{neural network} used to predict 
 
 
 
+\subsection{Bibliographic notes}
+To read more on almost anything, see \citet{friedman2001elements}.
+For a brief review of Factor Analysis see \cite{friedman2001elements}.
+For an full exposition, and a discussion of the differences with PCA, see \cite{jolliffe2002principal}.
+
+For manifold learning see \citet{mohri2012foundations}.
+
 
 
 
@@ -822,6 +846,8 @@ Would you trust the recovered index?
 In high dimensional problems, \aka low signal-to-noise regimes, we will introduce some regularization, to reduce variance, as the cost of some bias. 
 For generative models, regularization can always be introduced with Bayesian priors, say, some matrix-valued distribution as a prior on $\loadings$. 
 For purely algorithmic approaches (such as PCA), regularization has to be be hard-wired into the algorithm.
+
+
 
 
 
@@ -860,6 +886,18 @@ It can also be seen as a particular type of rotation, since just like the FA pro
 
 
 
+\subsection{Sparse kernel principal component analysis}
+If you liked the idea of sparse loadings (for interpretability, or SNR), and you liked the idea of embedding the data into non-linear, infinite dimensional RKHS, why not marry the ideas?
+See \citet{tipping2001sparse}.
+
+
+
+\subsection{Random Projections}
+You feel that the data is SOOOOO large that you don't have time to find embeddings that are optimal in any sense. 
+You thus want to reduce the dimension of the data and don't care how good it is. 
+How about simply multiplying $X$ by a \emph{random} matrix, projecting from $\reals^p$ to $\reals^q$, for $q<p$.
+It turns out, that this is not a bad strategy!
+Look for the Johnson-Lindenstrauss lemma, for example in \citet{mohri2012foundations}.
 
 
 \newpage
