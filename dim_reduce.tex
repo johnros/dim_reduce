@@ -575,7 +575,7 @@ This does not mean that they cannot be cast via their generative model, but rath
 \label{sec:mds}
 
 Very roughly speaking, MDS can be thought of as a variation on PCA, that (i) begins with a distance graph\footnote{The term Graph is typically used in this context instead of Network. But a graph allows only yes/no relations, while a network, which is a weighted graph, allows a continuous measure of similarity (or dissimilarity). It is thus more appropriate.} $\dissimilaritys$, and (ii) embeds into a two-dimensional space.
-Regarding (i), we have already seen in Section~\ref{sec:pca_as_graph} that PCA really only needs a similarity graph, and not the whole $X$.  
+Regarding (i), we have already seen in Section~\ref{sec:pca_as_graph} that PCA really only needs a similarity graph, $X'X$, and not the whole $X$.  
 Regarding (ii), the embedding into two dimensions is motivated by that fact that MDS is typically used for visualization. 
 
 MDS aims at embedding a graph of distances, while preserving the original distances.
@@ -583,7 +583,8 @@ Basic results in graph/network theory \citep[e.g.][]{graham1988isometric} sugges
 The different types of MDSs, such as \emph{Classical MDS}, and \emph{Sammon Mappings}, differ in the \emph{stress function} penalizing for geometric distortion.
 
 Sadly, MDS may scale poorly to large dissimilarity matrices, and the optimization may converge to a local minimum.
-Being a data embedding, and not an embedding function, when new data points are made available, the embedding will have to be re-learned.
+The solution to MDS is an embedding and not an embedding \emph{function}. 
+When new data points are made available, the embedding will thus have to be re-learned.
 
 
 
@@ -597,20 +598,19 @@ The $z_i$'s are set to minimize some penalty for geometric deformation called th
 Typical stress functions include:
 \begin{description}
 	
-	\item[Classical MDS] \Aka \emph{Torgerson scaling} begins with the empirical covariance as the similarity measure and minimizes the squared distortion:
-	$\similarity_{i,j}:= \scalar{x_i-\bar x}{x_j-\bar{x}}$ and the new location are given by
+	\item[Classical MDS] \Aka \emph{Torgerson scaling} begins with the empirical covariance as the similarity measure,$\similarity_{i,j}:= \scalar{x_i-\bar x}{x_j-\bar{x}}$, and minimizes the squared average distortion:
 	\begin{align}
 	\label{eq:mds_classical}
 	\argmin{z_1,\dots,z_n}{\sum_{i,j=1}^{n} (\similarity_{i,j}-\scalar{z_i-\bar z}{z_j-\bar{z}} )^2}.
 	\end{align}
 	
-	\item[Least Squares] \Aka \emph{Kruskal-Shepard} starts with a Euclidean distance graph and minimizes the squared distortion. 
+	\item[Least Squares] \Aka \emph{Kruskal-Shepard} starts with a Euclidean distance graph,$\dissimilarity_{i,j}= \normII{x_i-x_j}$, and minimizes the squared average distortion. 
 	\begin{align}
 	\label{eq:mds_stress}
 	\argmin{z_1,\dots,z_n}{\sum_{i \neq j} (\dissimilarity_{i,j}-\norm{z_i-z_j} )^2}.
 	\end{align}
 	
-	\item[Sammon Mapping] Also known as \emph{Sammon's stress}, aims at minimizing the \emph{proportion} of distortion:
+	\item[Sammon Mapping] Also known as \emph{Sammon's stress}, starts with a Euclidean distance graph and aims at minimizing the average \emph{proportion} of distortion:
 	\begin{align}
 	\label{eq:mds_sammon}
 	\argmin{z_1,\dots,z_n}{\sum_{i \neq j} \frac{(\dissimilarity_{i,j}-\norm{z_i-z_j} )^2}{\dissimilarity_{i,j}}}.
@@ -635,7 +635,9 @@ Typical stress functions include:
 
 
 \subsubsection{Non-Metric MDS}
-[TODO]
+The above approaches to MDS start with the actual distances between points. 
+If the actual distances are replaced with some monotonic function of these, then it is only the \emph{ordering} of distances that drives the solution.
+This is known as \emph{non-metric MDS}.
 
 
 
