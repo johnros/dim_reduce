@@ -821,7 +821,7 @@ Alternatively, as a purely-algorithmic counterpart fo non-linear FA and ICA.
 To read more on almost anything, see \citet{friedman2001elements}.
 For a detailed review of ICA see \cite{hyvarinen2000independent}. 
 For more on MDS \cite{borg2005modern}.
-For manifold learning see \citet{mohri2012foundations}.
+For manifold learning, including kPCA, Isomap, local MDS, Laplacian eigenmaps, etc, see \citet{mohri2012foundations}.
 
 
 
@@ -836,7 +836,7 @@ As we previously mentioned (Sec.\ref{sec:how-many-pcs}), it is hard to accuratel
 For some intuition, think of recovering a ``bigness score'' (Example~\ref{ex:bmi}) from only 3 individuals ($p=2,n=3$). 
 Would you trust the recovered index?
 
-In high dimensional problems, \aka low signal-to-noise regimes, we will introduce some regularization, to reduce variance, as the cost of some bias. 
+In high dimensional problems, i.e., low signal-to-noise regimes, we will introduce some regularization, to reduce variance, as the cost of some bias. 
 For generative models, regularization can always be introduced with Bayesian priors, say, some matrix-valued distribution as a prior on $\loadings$. 
 For purely algorithmic approaches (such as PCA), regularization has to be be hard-wired into the algorithm.
 
@@ -848,7 +848,7 @@ For purely algorithmic approaches (such as PCA), regularization has to be be har
 
 SCoTLASS can be thought of as PCA, where sparse $\loadings$ are preferred as solutions.
 By ``sparse'' we mean that $\loadings$ has many zero entries. 
-We favor sparse solutions both to deal with the very low SNR of high dimensional problems, but also for better interpretation.
+We favor sparse solutions both to deal with the very low SNR of high dimensional problems, but also for better interpretation of the PCs.
 
 \begin{think}
 	Why is it easier to interpret the PCs when $\loadings$ has many zero entries?
@@ -857,7 +857,7 @@ We favor sparse solutions both to deal with the very low SNR of high dimensional
 The mathematics of SCoTLASS looks like the variance maximization formulation of PCA with an equality and an inequality constraint.
 \begin{align}
 \label{eq:scotlass}
-	\argmax{v}{v'(X'X)v  + \lambda \normI{v} \text{ such that } \normII{v}=1 }
+	\argmax{v}{v'(X'X)v  \text{ such that } \normII{v}=1, \normI{v}\leq t }
 \end{align}
 Sadly, Eq.(\ref{eq:scotlass}) is hard to solve numerically.
 
@@ -865,21 +865,23 @@ Sadly, Eq.(\ref{eq:scotlass}) is hard to solve numerically.
 \subsection{Sparse Principal Component Analysis (sPCA)}
 \label{sec:sPCA}
 
-Starting from the linear-space approximation view of PCA (not variance maximization), and with the numerical difficulties of SCoTLASS, we define the sPCA problem:
+Motivated by the numerical difficulties of SCoTLASS, and starting from the linear-space approximation view of PCA (not variance maximization) the sPCA problem is defined as follows:
 \begin{align}
 \label{eq:spca}
 	\argmin{\loadings,\theta}{\normF{X-\Theta \loadings X} + \lambda_2 \normII{\loadings} + \lambda_1 \normI{\loadings} \text{ such that } \normII{\Theta}=1},
 \end{align}
 where $\loadings$ is the matrix of all loadings, $\normF{.}$ the Frobenius matrix-norm, $\normII{.}$ the $l_2$ matrix-norm, and $\normI{.}$ the $l_1$ matrix-norm.
 
-sPCA can be seen as the SCoTLASS problem, where $\normII{\loadings}=1$ is relaxed to $ \normII{\loadings}\leq t$ for ease of computation.
-It can also be seen as a particular type of rotation, since just like the FA problem, when $p>n$ then PCA is also non-identifiable. 
+
+\begin{remark}[sPCA and FA rotations]
+	sPCA can be seen as a particular type of rotation, that favors sparse $\loadings$, since just like the FA problem, when $p>n$ then PCA is also non-identifiable. 
+\end{remark}
 
 
 
 
 
-\subsection{Sparse kernel principal component analysis}
+\subsection{Sparse kernel principal component analysis (skPCA)}
 If you liked the idea of sparse loadings (for interpretability, or SNR), and you liked the idea of embedding the data into non-linear, infinite dimensional RKHS, why not marry the ideas?
 See \citet{tipping2001sparse}.
 
