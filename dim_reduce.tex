@@ -50,7 +50,7 @@
 \begin{example}[g-factor]
 	\label{ex:iq}
 	Consider the correctness of the answers to a questionnaire with $p$ questions. 
-	The data may seemingly reside in a $p$ dimensional space, but assuming there is such a thing as ``skill'', then given the correctness of a person's reply to a subset of questions, we have a good idea how he scores on the rest. 
+	The data may seemingly reside in a $p$ dimensional space, but assuming there is a thing as ``skill'', then given the correctness of a person's reply to a subset of questions, we have a good idea how he scores on the rest. 
 	Put differently, we don't really need a $200$ question questionnaire-- $100$ is more than enough.
 	If skill is indeed a one dimensional quality, then the questionnaire data should organize around a single line in the $p$ dimensional cube. 
 \end{example}
@@ -82,7 +82,7 @@ It can be found under the names of
 \emph{
 	Discrete Karhunen–Loève Transform; 
 	Hotteling Transform; 
-	Proper Orthogonal Decomposition (POD); 
+	Proper Orthogonal Decomposition; 
 	Eckart–Young Theorem; 
 	Schmidt–Mirsky Theorem;  
 	Empirical Orthogonal Functions; 
@@ -105,7 +105,7 @@ Pearson was also trying to give each individual a score.
 He did not care about variance maximization, however. 
 He simply wanted a small set of coordinates in some (linear) space that approximates the original data well. 
 As it turns out, the best linear-space approximation of $X$ is also the variance maximizing one. 
-More precisely: the \emph{sequence} of $1,\dots,p$ dimensional linear spaces that best approximate $X$, is exactly the sequence of $1,\dots,p$ dimensional scores, that best separate between the $n$ samples. 
+More precisely: the \emph{sequence} of $1,\dots,p$ dimensional linear spaces that best approximate $X$ in squared distance, is exactly the sequence of $1,\dots,p$ dimensional scores, that best separate between the $n$ samples. 
 Pearson and Hotelling (among others) thus arrived to the exact same solution, with different motivations. 
 
 
@@ -120,8 +120,8 @@ We now present the derivation of PCA from the two different motivations.
 \subsubsection{Variance Maximizing View of PCA}
 
 \begin{proof}
-	The sketch of the proof is the following:
-	We will first show that the weight vector that maximizes the variance of the score is the eigenvector that corresponds to the first principal component.
+	The sketch of the proof is the following: 
+	we will first show that the weight vector that maximizes the variance of the score is the eigenvector that corresponds to the first principal component.
 	We will do so for the \emph{population} covariance, $\Sigma$, and wrap up by plugging its empirical counterpart, $X'X$ (assuming a centered $X$). 
 		
 	Starting with the first principal component.
@@ -137,7 +137,7 @@ We now present the derivation of PCA from the two different motivations.
 	\end{align}
 	Differentiating w.r.t $v$ and equating zero: 
 	\begin{align}
-	(\Sigma- \lambda I) v = 0
+	(\Sigma- \lambda I) v = 0.
 	\end{align}
 	We thus see that any of the $p$ eigenvalue-eigenvector pairs of $\Sigma$ is a local extremum. 
 	Which of them to pick?
@@ -146,17 +146,17 @@ We now present the derivation of PCA from the two different motivations.
 	\label{eq:pca_maximal_variance}
 	\argmax{v:\normII{v}^2=1}{v' \Sigma v }=\argmax{\lambda}{v' \lambda v }
 	\end{align}
-	so that the global maximum is obtained with the largest eigen-value $\lambda$.
+	so that the global maximum is obtained with the largest eigenvalue $\lambda$.
 	Put differently, the weight vector that returns the score that best separates individuals, is the eigenvector of $\Sigma$ with the largest eigenvalue. 
 	
-	The second principal component can be found by solving the same problem, with the additional constraint of $v_2$ orthogonal to $v_1$.
+	The second principal component can be found by solving the same problem, with the additional constraint of $v_2$ orthogonal to $v_1$, and so on, until $v_p$. 
 	
 	The last missing ingredient is that instead of the true covariance between the features, $\Sigma$, we use the (centered) empirical covariance $X'X$.
 \end{proof}
 
 
 \begin{remark}
-Readers familiar with matrix norms will recognize that the above is exactly the derivation of the spectral norm of $\Sigma$.
+Readers familiar with matrix norms will recognize that the above is exactly the derivation of the spectral norm of $\Sigma$, and the variance of the first score, is exactly the spectral norm\footnote{\Aka \emph{induced norm $l_2$ norm}, \emph{operator norm}.} of $\Sigma$.
 \end{remark}
 
 
@@ -167,18 +167,18 @@ In here, we try to find a series of $\manifold_q; q=1,\dots,p$, such that $\mani
 The problem to solve is 
 \begin{align}
 \label{eq:pca-dim-reduce}
-	\argmin{A\in \reals^{q \times p}, S\in \reals^{q \times n}}{\normF{X- S'A}}
+	\argmin{A\in \reals^{q \times p}, \latentn \in \reals^{n \times q}}{\normF{X- \latentn \loadings}}
 \end{align}
-and $\manifold_q$ is the span of $S$.
+and $\manifold_q$ is the span of $\latentn$, and $\loadings'X=X v_1,\dots,X v_q$ are the $q$ PCs.
 
 
 
 \subsubsection{Bi Plot}
 \label{sec:bi_plot}
-The \emph{Bi-Plot} shows the two first scores of the original data points.
+The \emph{Bi-Plot} shows the two PCs, $(PC_1,PC_2):=(Xv_1,Xv_2)$, of the original data points.
 These scores are known as the \emph{Principal Componets} (PCs). \marginnote{Principal Components}
-The contribution of each original variable to each PC, is called the \emph{Loadings}.
-The plot also shows the contribution of each of the original variables to each of the scores. 
+The contribution of each original variable to each PC, $\loadings=(v_1,\dots,v_q)$, is called the \emph{Loadings}.
+The bi-plot also shows $v_1,v_2$, i.e., the contribution of each of the original variables to each of the PCs. 
 See example in Figure~\ref{fig:usaarrests}.
 
 
@@ -211,7 +211,7 @@ See example in Figure~\ref{fig:usaarrests}.
 We have currently offered two motivations for PCA: 
 (i) Find linear combinations $v_1,\dots,v_p$ that best distinguish between observations, i.e., maximize variance. 
 (ii) Find the linear subspaces $\manifold_1,\dots,\manifold_p$ that best approximates the data.
-The reason these two problems are equivalent, is due to the use of the squares-error/Euclidean norms.
+The reason these two problems are equivalent, Pythagoras.
 
 Informally speaking, the data has some total variance. 
 In analogy to the $SST=SSR+SSE$ decomposition in linear regression, the total variance of $X$ can be decomposed into the part in $\manifold_q$, and the part orthogonal. 
@@ -229,20 +229,29 @@ This is simply because all the scores, are linear combinations of columns of $X$
 On the face of it, with $p$ variables one can find $p$ PCs. 
 Things are not that simple however.
 
-In the population version of the problem, i.e., when $\Sigma$, and not $X'X$ is known, the number of non-trivial components is the number of ``independent information pieces'' in $\x$. 
+In the population version of the problem, i.e., when $\Sigma$, and not $X'X$ is known, the number of PCs is the number of ``independent information pieces'' in $\x$. 
 It will trivially be $p$ unless entries in $\x$ are fully multicollinear. 
 Stating that $\Sigma$ has full rank, is thus identical to stating that the variables of $\x$ are not fully correlated, and thus, that $p$ PCs can be recovered. 
 
 In the empirical version of the problem, i.e., when $X'X$, and not $\Sigma$ is known, things further complicate.
-First, for purely algebraic reasons, there may be as many non zero eigenvalues as the rank of $X'X$.
-Clearly, if $p>n$, variables of $X$ have to be linearly dependent, so that $X'X$ cannot possibly be of full rank.
-Put differently, the number of PCs that may be computed is the same as the dimension of the eigenspace of $X$. 
+First, for purely algebraic reasons, there may be as many non zero eigenvalues as the rank of $X$.
+Clearly, if $p>n$, variables of $X$ have to be linearly dependent, so that $X$, thus $X'X$, cannot possibly be of full rank.
+Put differently, the number of PCs that may be computed is the same as the dimension of the rank of $X$. 
 
 While the algebraic problem ends when $p<n$, the statistical one only begins, and ends if $n \gg p$. 
-This is because if $p<n$ but $p\sim n$ then we do not have many observations per estimated parameter. 
+This is because $p$ eigenvalues and vectors include roughly $\bigO(p+p^2)$ parameters. 
+If $p<n$ but $p\sim n$ then we do not have many observations per estimated parameter. 
 In the statistical literature, this is known as a \emph{high-dimensional} problem. 
 In the engineering parlance, we say we have low \emph{signal-to-noise}.
 For a rigorous treatment of the statistical properties of PCA, see \cite{nadler2008finite}.
+
+A related problem is the one of choosing the dimension of the approximating space, $q$. 
+The theory in \cite{nadler2008finite}, and \cite{gavish_optimal_2013} is a good starting point for an analytic solution.
+Then again, a purely algorithmic solution is available by adopting the supervised learning view of dimensionality reduction.
+As can be seen from Eq.(\ref{eq:pca-dim-reduce}), PCA, or any other reduction algorithm, is an empirical risk minimization problem.
+As such, a resampling approach is made possible by putting data aside, and looking for a minimum of the out-of-sample reconstruction error\footnote{Using your favorite resampling algorithm such as V-fold CV, Bootstrapping, train-test, etc.}, as $q$ grows from $1$ to $p$. 
+
+
  
 
 
@@ -252,7 +261,7 @@ For a rigorous treatment of the statistical properties of PCA, see \cite{nadler2
 It turns out that we may find the sequence of best approximating linear subspaces, i.e., the PCs, without the actual measurements $X$, but only with a dissimilarity graph. 
 In particular, with the $n\times n$ graph $\dissimilaritys$ of Euclidean distances between individuals: $\dissimilaritys_{i,j}:= \normII{x_i-x_j}$. 
 
-It should come of no surprise that we done need the actual measurements, $X$, since the optimal loadings, $v$, only depend on the covariance $\Sigma$, or its empirical counterpart, $X'X$. 
+It should come of no surprise that we don't need the actual measurements, $X$, since the optimal loadings, $v$, only depend on the covariance $\Sigma$, or its empirical counterpart, $X'X$. 
 It may, however, be quite surprising that given only the distances between individuals, we may not recover the covariance between variables, $X'X$, but we can recover the PCs. 
 Put differently, to find the low dimensional $\manifold$ that approximates the data, we don't need the whole data, but rather, only the graph of distances between data points. 
 
@@ -401,7 +410,7 @@ And in matrix notation, for $q<p$ latent attributes:
 	\label{eq:factor}
 	X = \latentn \loadings  +\varepsilon,
 	\end{align}
-where $\loadings$ is the $q \times p$ matrix of factor loadings, and $\latentn$ the $q \times n$ matrix of latent personality traits. 
+where $\loadings$ is the $q \times p$ matrix of factor loadings, and $\latentn$ the $n \times q$ matrix of latent personality traits. 
 In our particular example where $q=1$, the problem is to recover the unobservable intelligence scores, $s_1,\dots,s_n$, from the observed answers $X$.	
 \end{example}
 
@@ -518,7 +527,8 @@ For ease of presentation we present a simple setup, which can be considerably ge
 In this setup, we will first analyze the population problem, i.e., in terms of random variables. 
 We thus replace the data $X$, with the random vector $\x$, and afterwards consider implementation for finite samples. 
 \begin{itemize}
-	\item $\x=\latentn \loadings $, implying that $\x$ is \emph{linear} in the latent components, and the latent space is of dimension $\rank=p$. It follows that $s=\loadings'X$.
+	\item $\x=\latentn \loadings $, implying that $\x$ is \emph{linear} in the latent components, and the latent space is of dimension $\rank=p$. 
+	It follows that $s=\loadings'X$.
 	\item $\x$ has been pre-whitented, so that $\cov{\x}=I$.
 	\item Distance between distributions are measured using the Kullback-Leibler divergence (KL): $\kl{\x}{\latentn}$.
 \end{itemize}
@@ -763,9 +773,9 @@ Just like LLE.
 
 To present \emph{auto-encoders}, \aka \emph{auto-associator} or \emph{Diabolo network}, we restate the PCA space embedding formulation of Eq.(~\ref{eq:pca-dim-reduce}):
 \begin{align}
-	\argmin{A\in \reals^{q \times p}, S\in \reals^{q \times n}}{\normF{X- S'A}}
+	\argmin{A\in \reals^{q \times p}, S\in \reals^{n \times q}}{\normF{X- SA}}
 \end{align}
-we may freely assume that $AA'=I$ so the problem reduces to
+we may freely assume that $\loadings \loadings'=I$ so the problem reduces to
 \begin{align}
 	\argmin{A\in \reals^{q \times p}}{\normF{X- XA'A}}.
 \end{align}
@@ -874,11 +884,11 @@ Sadly, Eq.(\ref{eq:scotlass}) is hard to solve numerically.
 Starting from the linear-space approximation view of PCA (not variance maximization), and with the numerical difficulties of SCoTLASS, we define the sPCA problem:
 \begin{align}
 \label{eq:spca}
-	\argmin{v,\theta}{\normF{X-\Theta V X} + \lambda_2 \normII{V} + \lambda_1 \normI{V} \text{ such that } \normII{\Theta}=1},
+	\argmin{\loadings,\theta}{\normF{X-\Theta \loadings X} + \lambda_2 \normII{\loadings} + \lambda_1 \normI{\loadings} \text{ such that } \normII{\Theta}=1},
 \end{align}
-where $V$ is the matrix of all loadings, $\normF{.}$ the Frobenius matrix-norm, $\normII{.}$ the $l_2$ matrix-norm, and $\normI{.}$ the $l_1$ matrix-norm.
+where $\loadings$ is the matrix of all loadings, $\normF{.}$ the Frobenius matrix-norm, $\normII{.}$ the $l_2$ matrix-norm, and $\normI{.}$ the $l_1$ matrix-norm.
 
-sPCA can be seen as the SCoTLASS problem, where $\normII{V}=1$ is relaxed to $ \normII{V}\leq t$ for ease of computation.
+sPCA can be seen as the SCoTLASS problem, where $\normII{\loadings}=1$ is relaxed to $ \normII{\loadings}\leq t$ for ease of computation.
 It can also be seen as a particular type of rotation, since just like the FA problem, when $p>n$ then PCA is also non-identifiable. 
 
 
