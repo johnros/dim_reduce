@@ -622,7 +622,7 @@ Typical stress functions include:
 
 
 \begin{remark}[MDS and PCA]
-	If the input of MDS is the Euclidean distances between points, then MDS with ``classical scaling'' (\aka Torgerson scaling) returns the exact same embedding as PCA with $2$ PCs.
+	MDS with ``classical scaling'' (\aka Torgerson scaling) returns the exact same embedding as PCA with $2$ PCs.
 \end{remark}
 
 
@@ -656,10 +656,10 @@ This is known as \emph{non-metric MDS}.
 \end{example}
 
 Local MDS is aimed at solving the case where we don't know how to properly measure distances. 
-As such, and unlike MDS, it is an algorithm that compounds both the construction of the dissimilarity graph, and the embedding. 
-The solution of local MDS, as the name suggests, rests on the computation of \emph{local} distances, where the Euclidean assumption may still be plausible, and then aggregate many such local distances, before calling upon regular MDS.
+It is an algorithm that compounds both the construction of the dissimilarity graph, and the embedding. 
+The solution of local MDS, as the name suggests, rests on the computation of \emph{local} distances, where the Euclidean assumption may still be plausible, and then aggregate many such local distances, before calling upon regular MDS for the embedding.
 
-Because local MDS ends with a regular MDS, it can be seen as a non-linear embedding into a linear $\manifold$, unless classical stress is used, which is simply a PCA, thus, a linear embedding. 
+Because local MDS ends with a regular MDS, it can be seen as a non-linear embedding into a linear $\manifold$. 
 
 
 
@@ -675,7 +675,7 @@ Isomap, also known as \emph{Principal Coordinate Analysis}, operates very simila
 \subsection{Kernel Principal Component Analysis (kPCA)}
 \label{sec:kpca}
 
-Back to the height-weight example (\ref{ex:bmi}): assume we want to construct a ``bigness'' score, that best separates between individuals, but we no longer constrain it to be a linear function of the height and weight.
+Back to the height-weight problem in Example\ref{ex:bmi}: assume we want to construct a ``bigness'' score, that best separates between individuals, but we no longer constrain it to be a linear function of the height and weight.
 Adopting the variance maximization view of PCA, we could try to find the best separating score $g(x)$ by solving 
 \begin{align}
 \label{eq:kpca_wrong}
@@ -693,10 +693,8 @@ If we choose the right $g$'s, the solution of Eq.(\ref{eq:kpca_wrong}) may take 
 The classes of such $g$'s are known as Reproducing Kernel Hilbert Spaces (RKHS). 
 At an intuitive level, RKHS's are subspaces of ``the space of all functions'', which:
 (i) Are defined via a \emph{kernel function} we need to specify. Each kernel defines a different subspace. 
-(ii) They have a very particular structure so that the optimal $g$ is not linear in $X$, but is indeed linear in some simple and known transformation of $X$-- the kernel. 
+(ii) They have a very particular structure so that the optimal $g$ is not linear in $X$, but is linear in some simple and known transformation of $X$-- the kernel. 
 
-kPCA is an embedding into a non-linear manifold.
-The embedding itself is non-linear in the original data, $X$, but the whole point of the method is that the embedding is linear in a known function of the data-- the kernel function.
 
 
 \begin{remark}[kPCA and Manifold learning]
@@ -709,6 +707,26 @@ The embedding itself is non-linear in the original data, $X$, but the whole poin
 \paragraph{Mathematics of kPCA}
 [TODO]
 
+
+
+
+
+\subsection{Local Linear Embedding (LLE)}
+\label{sec:lle}
+
+LLE is similar in spirit to Isomap and LocalMDS.
+It differs, however, in the way similarities are computed, and in the way embeddings are performed. 
+Unlike localMDS, which computes local distances and ends with a \emph{global embedding}, LLE computes local distances and performs \emph{local linear embeddings}.
+The resulting approximating manifold $\manifold$, being the ``stitching'' of many linear spaces, is ultimately non linear.
+
+
+
+\subsection{Laplacian Eigenmaps}
+Just like LLE, Laplacian Eigenmaps is an algorithm to measure distances and embed local neighborhoods of the original $X$ space.
+
+
+\subsection{Maximum Variance Unfolding}
+A different solution to the same problem a LLE.
 
 
 
@@ -736,47 +754,25 @@ It is highly uncommon to approximate the data with manifolds with a dimension la
 
 
 
-
-\subsection{Local Linear Embedding (LLE)}
-\label{sec:lle}
-
-LLE is similar in spirit to Isomap and LocalMDS.
-It differs, however, in the way similarities are computed, and in the way embeddings are performed. 
-Unlike localMDS, which computes local distances and ends with a \emph{global embedding}, LLE computes local distances and performs \emph{local linear embeddings}.
-The resulting approximating manifold $\manifold$, being the ``stitching'' of many linear spaces, is ultimately non linear.
-
-
-
-\subsection{Laplacian Eigenmaps}
-Just like LLE, Laplacian Eigenmaps is an algorithm to measure distances and embed local neighborhoods of the original $X$ space.
-
-
-\subsection{Maximum Variance Unfolding}
-Just like LLE.
-
-
-
-
-
 \subsection{Auto Encoders}
 \label{sec:auto_encoders}
 
-To present \emph{auto-encoders}, \aka \emph{auto-associator} or \emph{Diabolo network}, we restate the PCA space embedding formulation of Eq.(~\ref{eq:pca-dim-reduce}):
+To present \emph{auto-encoders}, \aka \emph{auto-associator} or \emph{Diabolo network}, we restate the PCA space embedding formulation of Eq.(\ref{eq:pca-dim-reduce}):
 \begin{align}
-	\argmin{A\in \reals^{q \times p}, S\in \reals^{n \times q}}{\normF{X- SA}}
+	\argmin{\loadings\in \reals^{q \times p}, S\in \reals^{n \times q}}{\normF{X- \latentn \loadings}}
 \end{align}
-we may freely assume that $\loadings \loadings'=I$ so the problem reduces to
+because of the invariance of the solution to rotations, and at the cost of interpretation, we may freely assume that $\loadings \loadings'=I$.
+If $q=p$ then at the optimum $X=\latentn \loadings$ so that $\latentn=\loadings' X$. We thus have:
 \begin{align}
-	\argmin{A\in \reals^{q \times p}}{\normF{X- XA'A}}.
+	\argmin{\loadings\in \reals^{q \times p}}{\normF{X- X\loadings'\loadings}}.
 \end{align}
 
-
-The single layer \emph{auto-encodres}, is the following:
+This formulation of PCA problem, allows us to see that the single layer \emph{auto-encodres}, assumes that $X$ is some non-linear $g:\reals^p \mapsto \reals^p$ of scores with loadings $W$:
 \begin{align}
-	\argmin{W\in \reals^{q\times p}}{\normF{X- g(XW')W}},
+	\argmin{W\in \reals^{q\times p}}{\normF{X- g(XW')W}}.
 \end{align}
-where $g$ is a known bijection from $\reals^q$ to $\reals^q$.
-Autoencoding is thus best understood as a \emph{neural network} used to predict $X$ from $X$ (see Sec~\ref{sec:dim-reduce-and-supervised}), or as a purely-algorithmic counterpart fo non-linear FA.
+For the right choice of $g$, autoencoding can be understood as a \emph{neural network} used to predict $X$ latent scores (see Sec~\ref{sec:dim-reduce-and-supervised}).
+Alternatively, as a purely-algorithmic counterpart fo non-linear FA and ICA.
 
 
 
